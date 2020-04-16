@@ -1,0 +1,13 @@
+components
+connectors
+cvm
+dynamique.components
+dynamique.cvm
+interfaces
+ports
+tests
+utiles
+versionPlugin.components
+versionPlugin.cvm
+versionPlugin.plugins
+versionPlugin.ports

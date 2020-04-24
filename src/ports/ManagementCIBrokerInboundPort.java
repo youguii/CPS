@@ -49,7 +49,7 @@ public class ManagementCIBrokerInboundPort extends AbstractInboundPort implement
     // Appel Asynchrone
     @Override
     public void createTopic(String topic) throws Exception {
-		this.getOwner().handleRequestAsync(
+		this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
 			@Override
@@ -61,7 +61,7 @@ public class ManagementCIBrokerInboundPort extends AbstractInboundPort implement
     // Appel Asynchrone
     @Override
     public void createTopics(String[] topics) throws Exception {
-		this.getOwner().handleRequestAsync(
+		this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
 			@Override
@@ -73,7 +73,7 @@ public class ManagementCIBrokerInboundPort extends AbstractInboundPort implement
     // Appel Asynchrone    
     @Override
     public void destroyTopics(String topic) throws Exception {
-		this.getOwner().handleRequestAsync(
+		this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
 			@Override
@@ -110,7 +110,7 @@ public class ManagementCIBrokerInboundPort extends AbstractInboundPort implement
     // Appel Asynchrone
     @Override
     public void subscribe(String topic, String inboundPortURI) throws Exception {
-		this.getOwner().handleRequestAsync(
+		this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
 			@Override
@@ -123,7 +123,7 @@ public class ManagementCIBrokerInboundPort extends AbstractInboundPort implement
     // Appel Asynchrone
     @Override
     public void subscribe(String[] topics, String inboundPortURI) throws Exception {
-		this.getOwner().handleRequestAsync(
+		this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
 			@Override
@@ -135,7 +135,7 @@ public class ManagementCIBrokerInboundPort extends AbstractInboundPort implement
     // Appel Asynchrone
     @Override
     public void subscribe(String topic, MessageFilterI filter, String inboundPortURI) throws Exception {
-		this.getOwner().handleRequestAsync(
+		this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
 			@Override
@@ -147,7 +147,7 @@ public class ManagementCIBrokerInboundPort extends AbstractInboundPort implement
     // Appel Asynchrone
     @Override
     public void modifyFilter(String topic, MessageFilterI newFilter, String inboundPortURI) throws Exception {
-		this.getOwner().handleRequestAsync(
+		this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
 			@Override
@@ -159,7 +159,7 @@ public class ManagementCIBrokerInboundPort extends AbstractInboundPort implement
     // Appel Asynchrone
     @Override
     public void unsubscribe(String topic, String inboundPortURI) throws Exception {
-		this.getOwner().handleRequestAsync(
+		this.getOwner().handleRequestSync(
 				executorIndex,
 		        new AbstractComponent.AbstractService<Integer>() {
 					@Override

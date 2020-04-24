@@ -1,7 +1,2 @@
-/components/
-/ports/
-/interfaces/
-/cvm/
 /dynamique/
-/versionPlugin/
-/connectors/
+/components/

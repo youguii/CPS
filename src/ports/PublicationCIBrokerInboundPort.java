@@ -51,7 +51,7 @@ PublicationCI {
     // Appel Asynchrone
     @Override
     public void publish(MessageI m, String topic) throws Exception {
-        this.getOwner().handleRequestAsync(
+        this.getOwner().handleRequestSync(
         		executorIndex,
       
         new AbstractComponent.AbstractService<Integer>() {
@@ -67,7 +67,7 @@ PublicationCI {
     // Appel Asynchrone
     @Override
     public void publish(MessageI m, String[] topics) throws Exception {
-        this.getOwner().handleRequestAsync(
+        this.getOwner().handleRequestSync(
         		executorIndex,
      
         new AbstractComponent.AbstractService<Integer>() {
@@ -82,7 +82,7 @@ PublicationCI {
     // Appel Asynchrone
     @Override
     public void publish(MessageI[] ms, String topic) throws Exception {
-        this.getOwner().handleRequestAsync(
+        this.getOwner().handleRequestSync(
         		executorIndex,
 	        new AbstractComponent.AbstractService<Integer>() {
 				@Override
@@ -94,7 +94,7 @@ PublicationCI {
     // Appel Asynchrone
     @Override
     public void publish(MessageI[] ms, String[] topics) throws Exception {
-        this.getOwner().handleRequestAsync(
+        this.getOwner().handleRequestSync(
         		executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
 			@Override

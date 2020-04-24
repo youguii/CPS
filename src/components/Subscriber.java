@@ -1,5 +1,7 @@
 package components;
 
+import java.util.concurrent.TimeUnit;
+
 import connectors.ManagementCIConnector;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
@@ -44,7 +46,7 @@ implements ReceptionImplementationI {
 
 			throws Exception {
 
-		super(1, 0);
+		super(1, 1);
 
 		assert managementBIPURI != null : new PreconditionException(
 				"Suscriber : Broker's management port can't be null");
@@ -66,7 +68,7 @@ implements ReceptionImplementationI {
 			this.doPortConnection(this.managementSubscriberOP.getPortURI(), this.managementBIPURI,
 					ManagementCIConnector.class.getCanonicalName());
 
-			this.subscribeToTopic("Capitales");
+			//this.subscribeToTopic("Capitales");
 
 		} catch (Exception e) {
 			throw new ComponentStartException(e);
@@ -83,9 +85,10 @@ implements ReceptionImplementationI {
 	// Component life-cycle
 	// ------------------------------------------------------------------------
 
+	
 	@Override
-	public void start() throws ComponentStartException {
-		super.start();
+	public void execute() throws Exception {
+		super.execute();
 		this.logMessage("starting suscriber component.");
 
 		try {

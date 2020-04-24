@@ -5,6 +5,7 @@ import components.Publisher;
 import components.Subscriber;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.components.helpers.CVMDebugModes;
 
 public class CVM 
 extends AbstractCVM {
@@ -23,6 +24,21 @@ extends AbstractCVM {
     public void    deploy() throws Exception
     {
 		assert	!this.deploymentDone() ;
+		
+		// --------------------------------------------------------------------
+		// Configuration phase
+		// --------------------------------------------------------------------
+
+		// debugging mode configuration; comment and uncomment the line to see
+		// the difference
+//		AbstractCVM.DEBUG_MODE.add(CVMDebugModes.PUBLIHSING) ;
+//		AbstractCVM.DEBUG_MODE.add(CVMDebugModes.CONNECTING) ;
+//		AbstractCVM.DEBUG_MODE.add(CVMDebugModes.COMPONENT_DEPLOYMENT) ;
+
+		// --------------------------------------------------------------------
+		// Creation phase
+		// --------------------------------------------------------------------
+
         
     	String uriBroker = AbstractComponent.createComponent(
                 Broker.class.getCanonicalName(),

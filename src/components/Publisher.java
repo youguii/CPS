@@ -3,6 +3,7 @@ package components;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.sql.Timestamp;
+import java.util.concurrent.TimeUnit;
 
 import connectors.ManagementCIConnector;
 import connectors.PublicationCIConnector;
@@ -42,7 +43,7 @@ extends AbstractComponent {
 	 */
 	protected Publisher(String managementBIPURI, String uri) throws Exception {
 
-		super(2, 0);
+		super(2, 1);
 
 		assert managementBIPURI != null : new PreconditionException(
 				"Publisher : Broker's management port can't be null");
@@ -73,9 +74,10 @@ extends AbstractComponent {
 	// Component life-cycle
 	// ------------------------------------------------------------------------
 
+	
 	@Override
-	public void start() throws ComponentStartException {
-		super.start();
+	public void execute() throws Exception {
+		super.execute();
 		this.logMessage("starting publisher component.");
 		// System.out.println("starting publisher");
 
@@ -119,7 +121,7 @@ extends AbstractComponent {
 
 		this.managementPOP.doDisconnection();
 		this.publicationPOP.doDisconnection();
-
+		
 		super.finalise();
 	}
 

@@ -96,8 +96,7 @@ implements	ReceptionImplementationI{
 	@Override
 	public void			finalise() throws Exception
 	{
-
-        this.managementSubscriberOP.doDisconnection();        
+		this.owner.doPortDisconnection(this.managementSubscriberOP.getPortURI()) ;
         
         super.finalise();
 	}
@@ -112,8 +111,10 @@ implements	ReceptionImplementationI{
 		this.managementSubscriberOP.unpublishPort() ;
 		this.managementSubscriberOP.destroyPort() ;
 		this.removeRequiredInterface(ManagementCI.class) ;
-	
-	
+		
+		this.receptionSubscriberIP.unpublishPort() ;
+		this.receptionSubscriberIP.destroyPort() ;
+		this.removeOfferedInterface(ReceptionCI.class) ;
 	
 	}
 	

@@ -42,12 +42,15 @@ implements ReceptionImplementationI{
     	
         super(1, 0);
         
-        assert managementBIPURI != null : 
-        new PreconditionException("Suscriber : Broker's management port can't be null");
-        
         this.managementBIPURI = managementBIPURI;
         this.subscriberUri = uri;
         
+        assert managementBIPURI != null : 
+        new PreconditionException("Suscriber : Broker's management port can't be null");
+       
+        assert uri != null : 
+        	new PreconditionException("Subscriber : subscriber uri can't be null");
+    
         
         //Affichage de la console
 		this.tracer.setTitle("subscriber"+uri) ;
@@ -67,11 +70,18 @@ implements ReceptionImplementationI{
         super.execute();
         this.logMessage("starting suscriber component.") ;
             
+        System.out.println("Azul a tous");
 
         // Install the plug-in.
 		this.plugin = new SubscriberPlugin(managementBIPURI, subscriberUri) ;
+		
+		System.out.println("Hahahah");
 		plugin.setPluginURI(MY_PLUGIN_URI) ;
+		
+		System.out.println("Mouaaa");
 		this.installPlugin(plugin) ;
+
+        System.out.println("Salut a tous");
 
 		
             // Différents Senarios du Publier

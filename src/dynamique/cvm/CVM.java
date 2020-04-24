@@ -16,6 +16,20 @@ extends		AbstractCVM
 	@Override
 	public void			deploy() throws Exception
 	{
+		// --------------------------------------------------------------------
+		// Configuration phase
+		// --------------------------------------------------------------------
+
+		// debugging mode configuration; comment and uncomment the line to see
+		// the difference
+//		AbstractCVM.DEBUG_MODE.add(CVMDebugModes.PUBLIHSING) ;
+//		AbstractCVM.DEBUG_MODE.add(CVMDebugModes.CONNECTING) ;
+//		AbstractCVM.DEBUG_MODE.add(CVMDebugModes.COMPONENT_DEPLOYMENT) ;
+
+		// --------------------------------------------------------------------
+		// Creation phase
+		// --------------------------------------------------------------------
+
 		AbstractComponent.createComponent(
 								Assembler.class.getCanonicalName(),
 								new Object[]{AbstractCVM.thisJVMURI}) ;

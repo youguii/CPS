@@ -39,13 +39,13 @@ public class ReceptionCISubscriberInboundPort extends AbstractInboundPort implem
     // Appel Asynchrone
     @Override
     public void acceptMessage(MessageI m) throws Exception {
-    	 this.getOwner().handleRequestAsync(owner -> {((Subscriber)owner).acceptMessage(m); return null;});
+    	 this.getOwner().handleRequestSync(owner -> {((Subscriber)owner).acceptMessage(m); return null;});
     }
 
     // Appel Asynchrone
     @Override
     public void acceptMessage(MessageI[] ms) throws Exception {
-    	this.getOwner().handleRequestAsync(owner -> {((Subscriber)owner).acceptMessage(ms); return null;});
+    	this.getOwner().handleRequestSync(owner -> {((Subscriber)owner).acceptMessage(ms); return null;});
     }
 
 }

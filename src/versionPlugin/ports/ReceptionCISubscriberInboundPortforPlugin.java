@@ -9,7 +9,7 @@ import interfaces.ReceptionImplementationI;
 
 public class ReceptionCISubscriberInboundPortforPlugin 
 extends AbstractInboundPortForPlugin 
-implements ReceptionImplementationI {
+implements ReceptionCI {
 
     protected String uri;
     protected String pluginUri;
@@ -18,7 +18,10 @@ implements ReceptionImplementationI {
             throws Exception {
         super(ReceptionCI.class, pluginUri, owner);
         
-		assert	pluginUri != null && owner instanceof ReceptionCI ;
+        
+		assert	pluginUri != null && owner instanceof ReceptionImplementationI ;
+		
+        this.pluginUri= pluginUri;
 
     }
 
@@ -26,7 +29,10 @@ implements ReceptionImplementationI {
             throws Exception {
         super(uri, ReceptionCI.class,pluginUri, owner);
         
-		assert owner instanceof ReceptionCI ;
+        this.uri = uri;
+        this.pluginUri = pluginUri;
+        
+		assert owner instanceof ReceptionImplementationI ;
 
     }
 
@@ -41,21 +47,22 @@ implements ReceptionImplementationI {
     public void acceptMessage(MessageI m) throws Exception {
     	System.out.println("reception du message 1"+ m.getURI());
 
-    	new AbstractComponent.AbstractService<Void>(this.pluginURI) {
-			@Override
-			public Void call() throws Exception {
-				((ReceptionImplementationI)
-					this.getServiceProviderReference()).
-				acceptMessage(m) ;
-				return null;
-			}
-    	};
-		
+    	this.owner.handleRequestSync(
+    	    	new AbstractComponent.AbstractService<Void>(this.pluginURI) {
+    				@Override
+    				public Void call() throws Exception {
+    					((ReceptionImplementationI)
+    						this.getServiceProviderReference()).
+    					acceptMessage(m) ;
+    					return null;
+    				}
+    	    	});
     	
     }
 
     @Override
     public void acceptMessage(MessageI[] ms) throws Exception {
+    	this.owner.handleRequestSync(
     	new AbstractComponent.AbstractService<Void>(this.pluginURI) {
 			@Override
 			public Void call() throws Exception {
@@ -64,7 +71,7 @@ implements ReceptionImplementationI {
 				acceptMessage(ms) ;
 				return null;
 			}
-    	};
+    	});
 
     }
 }

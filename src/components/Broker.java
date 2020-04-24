@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import connectors.ReceptionCIConnector;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.exceptions.PreconditionException;
 import interfaces.ManagementCI;
 import interfaces.ManagementImplementationI;
@@ -104,7 +105,7 @@ public class Broker extends AbstractComponent
 
 		// Affichage de la console
 		this.tracer.setTitle("Broker");
-		this.tracer.setRelativePosition(0, 0);
+		this.tracer.setRelativePosition(1, 0);
 		this.toggleTracing();
 
 	}
@@ -114,8 +115,8 @@ public class Broker extends AbstractComponent
 //-------------------------------------------------------------------------
 
 	@Override
-	public void execute() throws Exception {
-		super.execute();
+	public void start() throws ComponentStartException {
+		super.start();
 		this.logMessage("starting broker component.");
 
 		try {
@@ -159,7 +160,6 @@ public class Broker extends AbstractComponent
 		for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
 			p.doDisconnection();
 		}
-
 		super.finalise();
 	}
 
@@ -171,8 +171,12 @@ public class Broker extends AbstractComponent
 			this.managementBIP.unpublishPort();
 			this.publicationBIP.unpublishPort();
 
-			for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
-				p.unpublishPort();
+
+			synchronized (portForEachSubscriber) {
+				for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
+					p.unpublishPort();
+					p.destroyPort();
+				}
 			}
 
 		} catch (Exception e) {
@@ -382,7 +386,9 @@ public class Broker extends AbstractComponent
 					for (Map.Entry<String, MessageFilter> entry : subscribers.entrySet()) {
 						if (entry.getValue() == null || entry.getValue().filter(msg)) {
 							// S'il n'y a pas de filtre ou que le filtre est respecté, on envoie le message
+							synchronized (portForEachSubscriber) {
 							portForEachSubscriber.get(entry.getKey()).acceptMessage(msg);
+							}
 						}
 					}
 					msgToSubscribers.remove(msg);
@@ -438,7 +444,9 @@ public class Broker extends AbstractComponent
 								}
 							}
 						if (res) {
+							synchronized (portForEachSubscriber) {
 							portForEachSubscriber.get(entry.getKey()).acceptMessage(msgs);
+							}
 						}
 					}
 					msgsToSubscribers.remove(msgs);
@@ -558,15 +566,16 @@ public class Broker extends AbstractComponent
 			this.sub4TopicLock.writeLock().unlock();
 		}
 
-		ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
-		receptionBOP.publishPort();
+		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
+			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
+			receptionBOP.publishPort();
 
-		synchronized (portForEachSubscriber) {
-			portForEachSubscriber.put(inboundPortURI, receptionBOP);
-		}
+			synchronized (portForEachSubscriber) {
+				portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			}
 
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
-
+		}
 		this.logMessage("Broker, connexion établie");
 	}
 
@@ -591,15 +600,16 @@ public class Broker extends AbstractComponent
 
 		this.logMessage("Broker, un Subscriber a souscrit à plusieurs topics");
 
-		ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
-		receptionBOP.publishPort();
+		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
+			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
+			receptionBOP.publishPort();
 
-		synchronized (portForEachSubscriber) {
-			portForEachSubscriber.put(inboundPortURI, receptionBOP);
-		}
+			synchronized (portForEachSubscriber) {
+				portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			}
 
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
-
+		}
 	}
 
 	@Override
@@ -619,15 +629,17 @@ public class Broker extends AbstractComponent
 			this.sub4TopicLock.writeLock().unlock();
 		}
 
-		ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
-		receptionBOP.publishPort();
+		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
+			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
+			receptionBOP.publishPort();
 
-		synchronized (portForEachSubscriber) {
-			portForEachSubscriber.put(inboundPortURI, receptionBOP);
-		}
+			synchronized (portForEachSubscriber) {
+				portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			}
 
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
-
+		
+		}
 	}
 
 	@Override
@@ -647,15 +659,16 @@ public class Broker extends AbstractComponent
 			this.sub4TopicLock.writeLock().unlock();
 		}
 
-		ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
-		receptionBOP.publishPort();
+		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
+			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
+			receptionBOP.publishPort();
 
-		synchronized (portForEachSubscriber) {
-			portForEachSubscriber.put(inboundPortURI, receptionBOP);
-		}
+			synchronized (portForEachSubscriber) {
+				portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			}
 
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
-
+		}
 	}
 
 
@@ -672,15 +685,16 @@ public class Broker extends AbstractComponent
 			this.sub4TopicLock.writeLock().unlock();
 		}
 
-		ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
-		receptionBOP.publishPort();
+		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
+			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
+			receptionBOP.publishPort();
 
-		synchronized (portForEachSubscriber) {
-			portForEachSubscriber.put(inboundPortURI, receptionBOP);
-		}
+			synchronized (portForEachSubscriber) {
+				portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			}
 
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
-
+		}
 	}
 
 }

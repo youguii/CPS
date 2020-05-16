@@ -5,6 +5,7 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import interfaces.MessageI;
 import interfaces.ReceptionCI;
+import interfaces.ReceptionImplementationI;
 
 public class ReceptionCISubscriberInboundPort extends AbstractInboundPort implements ReceptionCI {
 
@@ -26,6 +27,7 @@ public class ReceptionCISubscriberInboundPort extends AbstractInboundPort implem
         super(ReceptionCI.class, owner);
         
 		assert owner instanceof Subscriber ;
+        this.owner= owner;
 
     }
 
@@ -36,16 +38,14 @@ public class ReceptionCISubscriberInboundPort extends AbstractInboundPort implem
      */
     private static final long serialVersionUID = 1L;
 
-    // Appel Asynchrone
     @Override
     public void acceptMessage(MessageI m) throws Exception {
-    	 this.getOwner().handleRequestSync(owner -> {((Subscriber)owner).acceptMessage(m); return null;});
+    	 this.getOwner().handleRequestSync(owner -> {((ReceptionImplementationI)owner).acceptMessage(m); return null;});
     }
 
-    // Appel Asynchrone
     @Override
     public void acceptMessage(MessageI[] ms) throws Exception {
-    	this.getOwner().handleRequestSync(owner -> {((Subscriber)owner).acceptMessage(ms); return null;});
+    	this.getOwner().handleRequestSync(owner -> {((ReceptionImplementationI)owner).acceptMessage(ms); return null;});
     }
 
 }

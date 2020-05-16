@@ -1,6 +1,8 @@
 package interfaces;
 
-public interface SubscriptionImplementationI {
+import java.rmi.Remote;
+
+public interface SubscriptionImplementationI extends Remote {
 	/**
 	 * souscription à un topic
 	 * 

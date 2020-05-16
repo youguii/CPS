@@ -19,8 +19,7 @@ import utiles.Message;
 import utiles.Properties;
 import utiles.TimeStamp;
 
-public class Publisher 
-extends AbstractComponent {
+public class Publisher extends AbstractComponent {
 
 	/** Port sortant utilisé pour appeler le service publication */
 	protected PublicationCIPublisherOutboundPort publicationPOP;
@@ -74,24 +73,73 @@ extends AbstractComponent {
 	// Component life-cycle
 	// ------------------------------------------------------------------------
 
-	
+	@Override
+	public void start() throws ComponentStartException {
+		super.start();
+		this.logMessage("starting publisher component.");
+		
+		try {
+			
+			System.out.println("mpuri "+this.managementBIPURI);
+
+			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
+					ManagementCIConnector.class.getCanonicalName());
+			
+			System.out.println("Coucou publisher");
+			
+			String uripublicationPort = this.getPublicationUri();
+
+			System.out.println("Hi publisher");
+
+			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
+
+			System.out.println("Hello");
+
+			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
+					PublicationCIConnector.class.getCanonicalName());
+
+			System.out.println("World");
+
+			assert this.publicationPOP.connected();
+			assert this.publicationPOP.getConnector().connected();
+
+			
+		}catch (Exception e) {
+			throw new ComponentStartException(e);
+		}
+
+	}
+
 	@Override
 	public void execute() throws Exception {
 		super.execute();
-		this.logMessage("starting publisher component.");
+		this.logMessage("executing publisher component.");
 		// System.out.println("starting publisher");
 
 		try {
 
-			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
-					ManagementCIConnector.class.getCanonicalName());
+//			System.out.println("mpuri " + this.managementBIPURI);
+//
+//			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
+//					ManagementCIConnector.class.getCanonicalName());
+//
+//			System.out.println("Coucou publisher");
 
-			String uripublicationPort = this.getPublicationUri();
-
-			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
-
-			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
-					PublicationCIConnector.class.getCanonicalName());
+//			String uripublicationPort = this.getPublicationUri();
+//
+//			System.out.println("Hi publisher");
+//
+//			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
+//
+//			System.out.println("Hello");
+//
+//			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
+//					PublicationCIConnector.class.getCanonicalName());
+//
+//			System.out.println("World");
+//
+//			assert this.publicationPOP.connected();
+//			assert this.publicationPOP.getConnector().connected();
 
 			// Tests d'intégration / Différents Senarios du Publier
 			switch (this.publisherUri) {
@@ -109,7 +157,7 @@ extends AbstractComponent {
 			}
 
 		} catch (Exception e) {
-			throw new ComponentStartException(e);
+			throw new Exception(e);
 		}
 
 	}
@@ -119,9 +167,12 @@ extends AbstractComponent {
 		this.logMessage("stopping publisher component.");
 		this.printExecutionLogOnFile("publisher");
 
+		System.out.println(this.publicationPOP.connected());
+		System.out.println(this.managementPOP.connected());
+
 		this.managementPOP.doDisconnection();
 		this.publicationPOP.doDisconnection();
-		
+
 		super.finalise();
 	}
 
@@ -569,6 +620,7 @@ extends AbstractComponent {
 	 * @throws Exception
 	 */
 	public String getPublicationUri() throws Exception {
+		System.out.println("Dans publisher 1");
 		return this.managementPOP.getPublicationPortURI();
 	}
 

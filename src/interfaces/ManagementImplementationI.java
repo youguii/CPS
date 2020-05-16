@@ -1,6 +1,8 @@
 package interfaces;
 
-public interface ManagementImplementationI {
+import java.rmi.Remote;
+
+public interface ManagementImplementationI extends Remote{
 	/**
 	 * création d'un nouveau sujet
 	 * @param topic sujet qui sera crée

@@ -1,6 +1,8 @@
 package interfaces;
 
-public interface PublicationsImplementationI {
+import java.rmi.Remote;
+
+public interface PublicationsImplementationI extends Remote {
 
 	/**
 	 * publication d'un message associé à un topic

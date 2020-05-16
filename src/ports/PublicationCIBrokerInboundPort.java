@@ -1,6 +1,5 @@
 package ports;
 
-import components.Broker;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
@@ -15,7 +14,7 @@ PublicationCI {
     protected String uri;
     protected final int executorIndex;
 
-    //protected ComponentI owner;
+    protected ComponentI owner;
     
     public PublicationCIBrokerInboundPort(String uri,
             ComponentI owner,
@@ -23,12 +22,14 @@ PublicationCI {
             throws Exception {
         super(uri, PublicationCI.class, owner);
         
-		assert	uri != null && owner instanceof Broker ;
+        
+		assert	uri != null && owner instanceof PublicationsImplementationI ;
 
         this.uri= uri;
         this.executorIndex = executorIndex;
+        this.owner= owner;
 
-        //this.owner= owner;
+
     }
     
     public PublicationCIBrokerInboundPort(
@@ -37,10 +38,10 @@ PublicationCI {
             throws Exception {
         super(PublicationCI.class, owner);
         
-		assert owner instanceof Broker ;
+		assert owner instanceof PublicationsImplementationI ;
 		
         this.executorIndex = executorIndex;
-        //this.owner= owner;
+        this.owner= owner;
     }
 
     /**
@@ -48,7 +49,6 @@ PublicationCI {
      */
     private static final long serialVersionUID = 1L;
 
-    // Appel Asynchrone
     @Override
     public void publish(MessageI m, String topic) throws Exception {
         this.getOwner().handleRequestSync(
@@ -64,7 +64,6 @@ PublicationCI {
     }
 
     
-    // Appel Asynchrone
     @Override
     public void publish(MessageI m, String[] topics) throws Exception {
         this.getOwner().handleRequestSync(
@@ -79,7 +78,6 @@ PublicationCI {
     
     }
 
-    // Appel Asynchrone
     @Override
     public void publish(MessageI[] ms, String topic) throws Exception {
         this.getOwner().handleRequestSync(
@@ -91,7 +89,6 @@ PublicationCI {
 			}) ;
     }
 
-    // Appel Asynchrone
     @Override
     public void publish(MessageI[] ms, String[] topics) throws Exception {
         this.getOwner().handleRequestSync(

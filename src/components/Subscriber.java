@@ -1,7 +1,5 @@
 package components;
 
-import java.util.concurrent.TimeUnit;
-
 import connectors.ManagementCIConnector;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
@@ -64,15 +62,6 @@ implements ReceptionImplementationI {
 		this.receptionSubscriberIP = new ReceptionCISubscriberInboundPort(this);
 		this.receptionSubscriberIP.publishPort();
 
-		try {
-			this.doPortConnection(this.managementSubscriberOP.getPortURI(), this.managementBIPURI,
-					ManagementCIConnector.class.getCanonicalName());
-
-			//this.subscribeToTopic("Capitales");
-
-		} catch (Exception e) {
-			throw new ComponentStartException(e);
-		}
 
 		// Affichage de la console
 		this.tracer.setTitle("subscriber" + uri);
@@ -85,6 +74,24 @@ implements ReceptionImplementationI {
 	// Component life-cycle
 	// ------------------------------------------------------------------------
 
+	@Override
+	public void start() throws ComponentStartException {
+		super.start();
+		this.logMessage("starting subscriber component.");
+		
+		try {
+			System.out.println("msuri "+this.managementBIPURI);
+			System.out.println("msuri "+this.managementSubscriberOP.getPortURI());
+			System.out.println("msuri "+ManagementCIConnector.class.getCanonicalName());
+
+			this.doPortConnection(this.managementSubscriberOP.getPortURI(), this.managementBIPURI,
+					ManagementCIConnector.class.getCanonicalName());
+
+		} catch (Exception e) {
+			throw new ComponentStartException(e);
+		}
+		
+	}
 	
 	@Override
 	public void execute() throws Exception {
@@ -376,7 +383,8 @@ implements ReceptionImplementationI {
 	 */
 	public void subscribeToTopic(String topic) throws Exception {
 		this.logMessage("Subscriber fait subscribe au topic " + topic);
-
+		
+		System.out.println("Dans Sub 1");
 		this.managementSubscriberOP.subscribe(topic, this.receptionSubscriberIP.getPortURI());
 
 	}

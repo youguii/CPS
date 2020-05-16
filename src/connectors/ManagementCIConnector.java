@@ -33,11 +33,13 @@ public class ManagementCIConnector extends AbstractConnector implements Manageme
 	
 	@Override
 	public String getPublicationPortURI() throws Exception {
+		System.out.println("Dans connector getpub 3");
 		return ((ManagementCI)this.offering).getPublicationPortURI();
 	}
 
 	@Override
 	public void subscribe(String topic, String inboundPortURI) throws Exception {
+		System.out.println("Dans connector subsc 3");
         ((ManagementCI)this.offering).subscribe(topic, inboundPortURI);;
 	}
 

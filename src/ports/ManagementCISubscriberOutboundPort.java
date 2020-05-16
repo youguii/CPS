@@ -68,6 +68,7 @@ public class ManagementCISubscriberOutboundPort extends AbstractOutboundPort imp
 
     @Override
     public void subscribe(String topic, String inboundPortURI) throws Exception {
+    		System.out.println("Dans Sub port 2");
     		((ManagementCI)this.connector).subscribe(topic, inboundPortURI);
     }
 

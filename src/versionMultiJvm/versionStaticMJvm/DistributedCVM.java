@@ -4,6 +4,7 @@ package versionMultiJvm.versionStaticMJvm;
 import components.Broker;
 import components.Publisher;
 import components.Subscriber;
+import fr.sorbonne_u.alasca.replication.components.ReplicationManager;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractDistributedCVM;
 
@@ -14,6 +15,8 @@ extends		AbstractDistributedCVM
 {
 	protected static final String	JVM1_URI = "jvm1" ;
 	protected static final String	JVM2_URI = "jvm2" ;
+	protected static final String	JVM3_URI = "jvm3" ;
+
 
     protected static final String managementBIPURI = "managementBIPURI";
 	
@@ -33,21 +36,10 @@ extends		AbstractDistributedCVM
 	{
 		System.out.println(thisJVMURI);
 		if (thisJVMURI.equals(JVM1_URI)) {
-
+			
 			AbstractComponent.createComponent(
-	                Broker.class.getCanonicalName(),
-	                new Object[] { managementBIPURI});
-	    	
-		
-		
-			AbstractComponent.createComponent(
-					Publisher.class.getCanonicalName(),
-					new Object[] {managementBIPURI, Integer.toString(1) });
-	    	
-
-			AbstractComponent.createComponent(
-					Subscriber.class.getCanonicalName(),
-					new Object[] {managementBIPURI, Integer.toString(1)});
+					ReplicationManager.class.getCanonicalName(), 
+					new Object[] {});
 
 
 		} else if (thisJVMURI.equals(JVM2_URI)) {
@@ -57,16 +49,35 @@ extends		AbstractDistributedCVM
 	                new Object[] { managementBIPURI});
 	    	
 		
-			AbstractComponent.createComponent(
-					Publisher.class.getCanonicalName(),
-					new Object[] {managementBIPURI, Integer.toString(1) });
+//			AbstractComponent.createComponent(
+//					Publisher.class.getCanonicalName(),
+//					new Object[] {managementBIPURI, Integer.toString(2) });
 	    	
 
 			AbstractComponent.createComponent(
 					Subscriber.class.getCanonicalName(),
-					new Object[] {managementBIPURI, Integer.toString(1)});
+					new Object[] {managementBIPURI, Integer.toString(2)});
 
 
+		} else if (thisJVMURI.equals(JVM2_URI)) {
+			
+			AbstractComponent.createComponent(
+	                Broker.class.getCanonicalName(),
+	                new Object[] { managementBIPURI});
+	    	
+		
+		
+			AbstractComponent.createComponent(
+					Publisher.class.getCanonicalName(),
+					new Object[] {managementBIPURI, Integer.toString(2) });
+	    	
+//
+//			AbstractComponent.createComponent(
+//					Subscriber.class.getCanonicalName(),
+//					new Object[] {managementBIPURI, Integer.toString(2)});
+			
+		
+		
 		} else {
 
 			System.out.println("Unknown JVM URI... " + thisJVMURI) ;

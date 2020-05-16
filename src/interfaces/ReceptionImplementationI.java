@@ -1,6 +1,8 @@
 package interfaces;
 
-public interface ReceptionImplementationI {
+import java.rmi.Remote;
+
+public interface ReceptionImplementationI extends Remote{
 
 	/**
 	 * reception d'un message depuis le broker

@@ -135,28 +135,28 @@ extends		AbstractDistributedCVM
 							BROKER_INBOUND_PORT_URIS
 					});
 			
-			AbstractComponent.createComponent(
-	                Broker.class.getCanonicalName(),
-	                new Object[] { managementBIPURI1, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[0]});
-
-			AbstractComponent.createComponent(
-					Subscriber.class.getCanonicalName(),
-					new Object[] {managementBIPURI1, Integer.toString(2)});
-
-			AbstractComponent.createComponent(
-	                Broker.class.getCanonicalName(),
-	                new Object[] { managementBIPURI2, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[1]});
-
-			AbstractComponent.createComponent(
-					Publisher.class.getCanonicalName(),
-					new Object[] {managementBIPURI2, Integer.toString(2) });
+//			AbstractComponent.createComponent(
+//	                Broker.class.getCanonicalName(),
+//	                new Object[] { managementBIPURI1, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[0]});
+//
+//			AbstractComponent.createComponent(
+//					Subscriber.class.getCanonicalName(),
+//					new Object[] {managementBIPURI1, Integer.toString(2)});
+//
+//			AbstractComponent.createComponent(
+//	                Broker.class.getCanonicalName(),
+//	                new Object[] { managementBIPURI2, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[1]});
+//
+//			AbstractComponent.createComponent(
+//					Publisher.class.getCanonicalName(),
+//					new Object[] {managementBIPURI2, Integer.toString(2) });
 
 
 		} else if (thisJVMURI.equals(JVM2_URI)) {
 
-//			AbstractComponent.createComponent(
-//	                Broker.class.getCanonicalName(),
-//	                new Object[] { managementBIPURI1, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[0]});
+			AbstractComponent.createComponent(
+	                Broker.class.getCanonicalName(),
+	                new Object[] { managementBIPURI1, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[0]});
 	    	
 		
 //			AbstractComponent.createComponent(
@@ -164,22 +164,22 @@ extends		AbstractDistributedCVM
 //					new Object[] {managementBIPURI, Integer.toString(2) });
 	    	
 
-//			AbstractComponent.createComponent(
-//					Subscriber.class.getCanonicalName(),
-//					new Object[] {managementBIPURI1, Integer.toString(2)});
+			AbstractComponent.createComponent(
+					Subscriber.class.getCanonicalName(),
+					new Object[] {managementBIPURI1, Integer.toString(2)});
 
 
 		} else if (thisJVMURI.equals(JVM3_URI)) {
 			
-//			AbstractComponent.createComponent(
-//	                Broker.class.getCanonicalName(),
-//	                new Object[] { managementBIPURI2, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[1]});
+			AbstractComponent.createComponent(
+	                Broker.class.getCanonicalName(),
+	                new Object[] { managementBIPURI2, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[1]});
 	    	
 		
 		
-//			AbstractComponent.createComponent(
-//					Publisher.class.getCanonicalName(),
-//					new Object[] {managementBIPURI2, Integer.toString(2) });
+			AbstractComponent.createComponent(
+					Publisher.class.getCanonicalName(),
+					new Object[] {managementBIPURI2, Integer.toString(2) });
 	    	
 //
 //			AbstractComponent.createComponent(

@@ -1,5 +1,6 @@
 package versionMultiJvm.versionStaticMJvm.components;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
@@ -10,6 +11,7 @@ import connectors.ReceptionCIConnector;
 import fr.sorbonne_u.alasca.replication.connectors.ReplicableConnector;
 import fr.sorbonne_u.alasca.replication.interfaces.ReplicableCI;
 import fr.sorbonne_u.alasca.replication.interfaces.ReplicationI;
+import fr.sorbonne_u.alasca.replication.ports.ReplicableInboundPort;
 import fr.sorbonne_u.alasca.replication.ports.ReplicableOutboundPort;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
@@ -66,6 +68,7 @@ public class Broker extends AbstractComponent
 	
 	
 	protected ReplicableOutboundPort<String> broker_manager_op;
+	protected ReplicableInboundPort<String> broker_manager_ip;
 	protected String manager_inbound_port_uri;
 	
 	/**
@@ -75,10 +78,11 @@ public class Broker extends AbstractComponent
 	 */
 	protected Broker(
 			String managementBIPURI,
-			String manager_inbound_port_uri
+			String manager_inbound_port_uri,
+			String brokerC_IP_URI
 			
 	) throws Exception {
-		super(8, 0);
+		super(20, 8);
 
 		assert managementBIPURI != null : new PreconditionException("Broker : Broker's management port can't be null");
 
@@ -120,11 +124,16 @@ public class Broker extends AbstractComponent
 		this.addRequiredInterface(ReceptionCI.class);
 		
 		// Ajout du port pour la connexion avec ReplicationManager
+		this.addRequiredInterface(ReplicableCI.class);
 		this.broker_manager_op = new ReplicableOutboundPort<String>(this) ;
 		this.broker_manager_op.publishPort();
-		this.addRequiredInterface(ReplicableCI.class);
 		
 		this.manager_inbound_port_uri = manager_inbound_port_uri;
+		
+		this.addOfferedInterface(ReplicableCI.class);
+		this.broker_manager_ip = new ReplicableInboundPort<String>(brokerC_IP_URI, this) ;
+		this.broker_manager_ip.publishPort() ;
+		
 
 		// Affichage de la console
 		this.tracer.setTitle("Broker");
@@ -186,7 +195,12 @@ public class Broker extends AbstractComponent
 		this.logMessage("stopping broker component.");
 		this.printExecutionLogOnFile("broker");
 
+		
+		
 		// Déconnexion des ports connectés
+		this.broker_manager_op.doDisconnection();
+		
+		
 		for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
 			System.out.println("Subb "+p.connected());
 			p.doDisconnection();
@@ -201,6 +215,9 @@ public class Broker extends AbstractComponent
 			// Dépublication des ports
 			this.managementBIP.unpublishPort();
 			this.publicationBIP.unpublishPort();
+			
+			this.broker_manager_ip.unpublishPort();
+			this.broker_manager_op.unpublishPort();
 
 
 			synchronized (portForEachSubscriber) {
@@ -228,8 +245,26 @@ public class Broker extends AbstractComponent
 
 		HashMap<String, MessageFilter> map = new HashMap<>();
 		
-		Object [] parameters = {m, topic};
-		this.broker_manager_op.call(parameters);
+		Serializable [] parameters = {m, topic};
+		
+		System.out.println("on est dans publish avant call :) "+this.managementBIPURI);
+
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					broker_manager_op.call(parameters);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		
+//		this.broker_manager_op.call(parameters);
+		
+		System.out.println("on est dans publish aprés call :) "+this.managementBIPURI);
+
+		
 		
 		/*
 		 * S'il y a des abonnés au topic: On les récupère dans une map intermediaire
@@ -270,9 +305,20 @@ public class Broker extends AbstractComponent
 
 		HashMap<String, MessageFilter> map = new HashMap<>();
 		
-		Object [] parameters = {m, topics};
-		this.broker_manager_op.call(parameters);
+		Serializable [] parameters = {m, topics};
 
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					broker_manager_op.call(parameters);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		
+		
 		/*
 		 * Pour chauqe topic, s'il y a des abonnés au topic: On les récupère dans une
 		 * map intermediaire pour les associer au message Si non si le topic n'existe
@@ -315,8 +361,18 @@ public class Broker extends AbstractComponent
 		// Map va contenir les abonnés à topic
 		HashMap<String, MessageFilter> map = new HashMap<>();
 
-		Object [] parameters = {ms, topic};
-		this.broker_manager_op.call(parameters);
+		Serializable  [] parameters = {ms, topic};
+
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					broker_manager_op.call(parameters);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
 		
 		/*
 		 * S'il y a des abonnés au topic: On les récupère dans une map intermediaire
@@ -356,8 +412,19 @@ public class Broker extends AbstractComponent
 
 		HashMap<String, MessageFilter> map = new HashMap<>();
 
-		Object [] parameters = {ms, topics};
-		this.broker_manager_op.call(parameters);
+		Serializable [] parameters = {ms, topics};
+
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					broker_manager_op.call(parameters);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		
 		
 		/*
 		 * Pour chaque topic, s'il y a des abonnés au topic: On les récupère dans une
@@ -921,10 +988,12 @@ public class Broker extends AbstractComponent
 		String topic = null;
 		String [] topics = null;
 		
+		System.out.println("on est dans call :) "+this.managementBIPURI);
 		if(params[0] instanceof MessageI){
 			m = (MessageI) params[0];
 			if(params[1] instanceof String){
 				topic = (String) params[1];
+				System.out.println("le contenu du message recu = "+m.getURI());
 				receive(m, topic);
 			}else{
 				topics = (String[]) params[1];
@@ -946,6 +1015,4 @@ public class Broker extends AbstractComponent
 		return "OK";
 	}
 	
-	
-
 }

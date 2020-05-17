@@ -80,28 +80,28 @@ public class Publisher extends AbstractComponent {
 		
 		try {
 			
-			System.out.println("mpuri "+this.managementBIPURI);
-
-			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
-					ManagementCIConnector.class.getCanonicalName());
-			
-			System.out.println("Coucou publisher");
-			
-			String uripublicationPort = this.getPublicationUri();
-
-			System.out.println("Hi publisher");
-
-			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
-
-			System.out.println("Hello");
-
-			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
-					PublicationCIConnector.class.getCanonicalName());
-
-			System.out.println("World");
-
-			assert this.publicationPOP.connected();
-			assert this.publicationPOP.getConnector().connected();
+//			System.out.println("mpuri "+this.managementBIPURI);
+//
+//			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
+//					ManagementCIConnector.class.getCanonicalName());
+//			
+//			System.out.println("Coucou publisher");
+//			
+//			String uripublicationPort = this.getPublicationUri();
+//
+//			System.out.println("Hi publisher");
+//
+//			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
+//
+//			System.out.println("Hello");
+//
+//			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
+//					PublicationCIConnector.class.getCanonicalName());
+//
+//			System.out.println("World");
+//
+//			assert this.publicationPOP.connected();
+//			assert this.publicationPOP.getConnector().connected();
 
 			
 		}catch (Exception e) {
@@ -118,28 +118,28 @@ public class Publisher extends AbstractComponent {
 
 		try {
 
-//			System.out.println("mpuri " + this.managementBIPURI);
-//
-//			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
-//					ManagementCIConnector.class.getCanonicalName());
-//
-//			System.out.println("Coucou publisher");
+			System.out.println("mpuri " + this.managementBIPURI);
 
-//			String uripublicationPort = this.getPublicationUri();
-//
-//			System.out.println("Hi publisher");
-//
-//			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
-//
-//			System.out.println("Hello");
-//
-//			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
-//					PublicationCIConnector.class.getCanonicalName());
-//
-//			System.out.println("World");
-//
-//			assert this.publicationPOP.connected();
-//			assert this.publicationPOP.getConnector().connected();
+			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
+					ManagementCIConnector.class.getCanonicalName());
+
+			System.out.println("Coucou publisher");
+
+			String uripublicationPort = this.getPublicationUri();
+
+			System.out.println("Hi publisher");
+
+			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
+
+			System.out.println("Hello");
+
+			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
+					PublicationCIConnector.class.getCanonicalName());
+
+			System.out.println("World");
+
+			assert this.publicationPOP.connected();
+			assert this.publicationPOP.getConnector().connected();
 
 			// Tests d'intégration / Différents Senarios du Publier
 			switch (this.publisherUri) {

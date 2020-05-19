@@ -134,7 +134,7 @@ extends		AbstractDistributedCVM
 							PC,
 							BROKER_INBOUND_PORT_URIS
 					});
-			
+//			
 //			AbstractComponent.createComponent(
 //	                Broker.class.getCanonicalName(),
 //	                new Object[] { managementBIPURI1, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[0]});

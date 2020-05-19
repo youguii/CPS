@@ -245,7 +245,7 @@ public class Broker extends AbstractComponent
 
 		HashMap<String, MessageFilter> map = new HashMap<>();
 		
-		Serializable [] parameters = {m, topic};
+		Serializable [] parameters = {m, topic, this.getPublicationPortURI()};
 		
 		System.out.println("on est dans publish avant call :) "+this.managementBIPURI);
 
@@ -253,14 +253,13 @@ public class Broker extends AbstractComponent
 			@Override
 			public void run() {
 				try {
-					broker_manager_op.call(parameters);
+					 broker_manager_op.call((Serializable [])parameters);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 			}
 		});
 		
-//		this.broker_manager_op.call(parameters);
 		
 		System.out.println("on est dans publish aprés call :) "+this.managementBIPURI);
 
@@ -305,7 +304,7 @@ public class Broker extends AbstractComponent
 
 		HashMap<String, MessageFilter> map = new HashMap<>();
 		
-		Serializable [] parameters = {m, topics};
+		Serializable [] parameters = {m, topics, this.getPublicationPortURI()};
 
 		this.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -361,7 +360,7 @@ public class Broker extends AbstractComponent
 		// Map va contenir les abonnés à topic
 		HashMap<String, MessageFilter> map = new HashMap<>();
 
-		Serializable  [] parameters = {ms, topic};
+		Serializable  [] parameters = {ms, topic, this.getPublicationPortURI()};
 
 		this.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -412,7 +411,7 @@ public class Broker extends AbstractComponent
 
 		HashMap<String, MessageFilter> map = new HashMap<>();
 
-		Serializable [] parameters = {ms, topics};
+		Serializable [] parameters = {ms, topics, this.getPublicationPortURI()};
 
 		this.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -987,29 +986,37 @@ public class Broker extends AbstractComponent
 		MessageI [] ms = null;
 		String topic = null;
 		String [] topics = null;
+		String uriPublication = null;
 		
 		System.out.println("on est dans call :) "+this.managementBIPURI);
-		if(params[0] instanceof MessageI){
-			m = (MessageI) params[0];
-			if(params[1] instanceof String){
-				topic = (String) params[1];
-				System.out.println("le contenu du message recu = "+m.getURI());
-				receive(m, topic);
-			}else{
-				topics = (String[]) params[1];
-				receive(m, topics);
+		if(params[2] instanceof String ) {
+			uriPublication = (String) params[2];
+			if(!(uriPublication.equals(this.getPublicationPortURI()))) {
+				if(params[0] instanceof MessageI){
+					m = (MessageI) params[0];
+					if(params[1] instanceof String){
+						topic = (String) params[1];
+						System.out.println("le contenu du message recu = "+m.getURI());
+						receive(m, topic);
+					}else{
+						topics = (String[]) params[1];
+						receive(m, topics);
+					}
+					
+					
+				}else if(params[0] instanceof MessageI[]){
+					ms = (MessageI []) params[0];
+					if(params[1] instanceof String){
+						topic = (String) params[1];
+						receive(ms, topic);
+					}else{
+						topics = (String[]) params[1];
+						receive(ms, topics);
+					}
+				}
+				
 			}
 			
-			
-		}else if(params[0] instanceof MessageI[]){
-			ms = (MessageI []) params[0];
-			if(params[1] instanceof String){
-				topic = (String) params[1];
-				receive(ms, topic);
-			}else{
-				topics = (String[]) params[1];
-				receive(ms, topics);
-			}
 		}
 		
 		return "OK";

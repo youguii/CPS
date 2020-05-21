@@ -50,13 +50,13 @@ extends		AbstractDistributedCVM
 		if (thisJVMURI.equals(JVM1_URI)) {
 			
 			AbstractComponent.createComponent(
-					BrokersManager.class.getCanonicalName(),
-					new Object[] {
-						1,
-						0,
-						MANAGER_INBOUND_PORT_URI,
-						BROKER_INBOUND_PORT_URIS
-					});
+					BrokersManager.class.getCanonicalName(), 
+					new Object[] { 
+							1,
+							MANAGER_INBOUND_PORT_URI,
+							BROKER_INBOUND_PORT_URIS
+							});
+			
 			
 //			AbstractComponent.createComponent(
 //	                Broker.class.getCanonicalName(),
@@ -99,6 +99,7 @@ extends		AbstractDistributedCVM
 
 		} else if (thisJVMURI.equals(JVM3_URI)) {
 			
+			
 			AbstractComponent.createComponent(
 	                Broker.class.getCanonicalName(),
 	                new Object[] { 
@@ -113,11 +114,21 @@ extends		AbstractDistributedCVM
 					new Object[] {
 							managementBIPURI2, 
 							Integer.toString(2) });
-	    	
+//	    	
 //
 //			AbstractComponent.createComponent(
 //					Subscriber.class.getCanonicalName(),
 //					new Object[] {managementBIPURI, Integer.toString(2)});
+			
+//			AbstractComponent.createComponent(
+//					BrokersManager.class.getCanonicalName(),
+//					new Object[] {
+//						1,
+//						0,
+//						MANAGER_INBOUND_PORT_URI,
+//						BROKER_INBOUND_PORT_URIS
+//					});
+			
 			
 		
 		

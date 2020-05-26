@@ -1,1 +1,10 @@
+/components/
+/connectors/
+/cvm/
+/dynamique/
+/interfaces/
+/ports/
+/tests/
+/utiles/
 /versionMultiJvm/
+/versionPlugin/

@@ -39,127 +39,102 @@ public class Properties implements PropertiesI {
 
 	@Override
 	public void putProp(String name, boolean v) throws Exception {
-//		propStrBool.setName(name);
-//		propStrBool.setValeur(v);
 
 		boolProperties.put(name, v);
 	}
 
 	@Override
 	public void putProp(String name, byte v) throws Exception {
-//		propStrByte.setName(name);
-//		propStrByte.setValeur(v);
 
 		byteProperties.put(name, v);
 	}
 
 	@Override
 	public void putProp(String name, char v) throws Exception {
-//		propStrChar.setName(name);
-//		propStrChar.setValeur(v);
 
 		charProperties.put(name, v);
 	}
 
 	@Override
 	public void putProp(String name, double v) throws Exception {
-//		propStrDouble.setName(name);
-//		propStrDouble.setValeur(v);
 
 		doubleProperties.put(name, v);
 	}
 
 	@Override
 	public void putProp(String name, float v) throws Exception {
-//		propStrFloat.setName(name);
-//		propStrFloat.setValeur(v);
 
 		floatProperties.put(name, v);
 	}
 
 	@Override
 	public void putProp(String name, int v) throws Exception {
-//		propStrInt.setName(name);
-//		propStrInt.setValeur(v);
 
 		intProperties.put(name, v);
 	}
 
 	@Override
 	public void putProp(String name, long v) throws Exception {
-//		propStrLong.setName(name);
-//		propStrLong.setValeur(v);
 
 		longProperties.put(name, v);
 	}
 
 	@Override
 	public void putProp(String name, short v) throws Exception {
-//		propStrShort.setName(name);
-//		propStrShort.setValeur(v);
 
 		shortProperties.put(name, v);
 	}
 
 	@Override
 	public void putProp(String name, String v) throws Exception {
-//		propStrString.setName(name);
-//		propStrString.setValeur(v);
 
 		strProperties.put(name, v);
 	}
 
 	@Override
 	public boolean getBooleanProp(String name) throws Exception {
-//		return (boolean) propStrBool.getValeur();
+
 		return boolProperties.get(name);
 	}
 
 	@Override
 	public byte getByteProp(String name) throws Exception {
-//		return (byte) propStrByte.getValeur();
+
 		return byteProperties.get(name);
 	}
 
 	@Override
 	public char getCharProp(String name) throws Exception {
-//		return (char) propStrChar.getValeur();
 		return charProperties.get(name);
 	}
 
 	@Override
 	public double getDoubleProp(String name) throws Exception {
-//		return (double) propStrDouble.getValeur();
 		return doubleProperties.get(name);
 	}
 
 	@Override
 	public float getFloatProp(String name) throws Exception {
-//		return (float) propStrFloat.getValeur();
 		return floatProperties.get(name);
 	}
 
 	@Override
 	public int getIntProp(String name) throws Exception {
-//		return (int) propStrInt.getValeur();
 		return intProperties.get(name);
 	}
 
 	@Override
 	public long getLongProp(String name) throws Exception {
-//		return (long) propStrLong.getValeur();
 		return longProperties.get(name);
 	}
 
 	@Override
 	public short getShortProp(String name) throws Exception {
-//		return (short) propStrShort.getValeur();
 		return shortProperties.get(name);
 	}
 
 	@Override
 	public String getStringProp(String name) throws Exception {
-//		return (String) propStrString.getValeur();
 		return strProperties.get(name);
 	}
 

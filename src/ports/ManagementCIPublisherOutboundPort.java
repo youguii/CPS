@@ -65,7 +65,6 @@ implements ManagementCI {
 
 	@Override
 	public String getPublicationPortURI() throws Exception {
-		System.out.println("Dans le port pub 2");
 		return ((ManagementCI)this.connector).getPublicationPortURI();
 	}
 

@@ -13,7 +13,6 @@ import interfaces.ReceptionImplementationI;
 import ports.ManagementCISubscriberOutboundPort;
 import ports.ReceptionCISubscriberInboundPort;
 import utiles.MessageFilter;
-import utiles.Properties;
 
 public class Subscriber 
 extends AbstractComponent 
@@ -80,9 +79,6 @@ implements ReceptionImplementationI {
 		this.logMessage("starting subscriber component.");
 		
 		try {
-			System.out.println("msuri "+this.managementBIPURI);
-			System.out.println("msuri "+this.managementSubscriberOP.getPortURI());
-			System.out.println("msuri "+ManagementCIConnector.class.getCanonicalName());
 
 			this.doPortConnection(this.managementSubscriberOP.getPortURI(), this.managementBIPURI,
 					ManagementCIConnector.class.getCanonicalName());
@@ -115,7 +111,6 @@ implements ReceptionImplementationI {
 				senario_One();
 			}
 
-			// this.createTopic("Métiers");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -284,9 +279,19 @@ implements ReceptionImplementationI {
 		});
 
 		// Initialiser un filtre
-		MessageFilter f = new MessageFilter(new Properties());
-		f.getProperties().putProp("Végétarien", true);
-
+		MessageFilterI f = new MessageFilterI() {
+			
+			@Override
+			public boolean filter(MessageI m) throws Exception {
+				//on veut garder les messages avec une longueur < 100 
+				Integer lenM = m.getProperties().getIntProp("lenM");
+				if(lenM != null && lenM > 200) {
+					return false;
+				}
+				return true;
+			}
+		};
+	
 		// Souscrire à un topic avec filtre
 		this.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -301,8 +306,7 @@ implements ReceptionImplementationI {
 		});
 
 		// Initialiser un filtre
-		MessageFilter f2 = new MessageFilter(new Properties());
-		f2.getProperties().putProp("Européen", false);
+		MessageFilter f2 = new MessageFilter(2, null, null, null);
 
 		// Souscrire à un topic avec filtre
 		this.runTask(new AbstractComponent.AbstractTask() {
@@ -384,7 +388,6 @@ implements ReceptionImplementationI {
 	public void subscribeToTopic(String topic) throws Exception {
 		this.logMessage("Subscriber fait subscribe au topic " + topic);
 		
-		System.out.println("Dans Sub 1");
 		this.managementSubscriberOP.subscribe(topic, this.receptionSubscriberIP.getPortURI());
 
 	}

@@ -1,7 +1,5 @@
 package interfaces;
 
-import utiles.Properties;
-
 public interface MessageFilterI{
 	/**
 	 * prend un message et lui applique le filtre
@@ -11,6 +9,5 @@ public interface MessageFilterI{
 	 */
 	public boolean filter(MessageI m) throws Exception;
 	
-	// à enlever
-	public Properties getProperties();
+
 }

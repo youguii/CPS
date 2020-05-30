@@ -3,7 +3,6 @@ package components;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.sql.Timestamp;
-import java.util.concurrent.TimeUnit;
 
 import connectors.ManagementCIConnector;
 import connectors.PublicationCIConnector;
@@ -79,31 +78,7 @@ public class Publisher extends AbstractComponent {
 		this.logMessage("starting publisher component.");
 		
 		try {
-			
-//			System.out.println("mpuri "+this.managementBIPURI);
-//
-//			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
-//					ManagementCIConnector.class.getCanonicalName());
-//			
-//			System.out.println("Coucou publisher");
-//			
-//			String uripublicationPort = this.getPublicationUri();
-//
-//			System.out.println("Hi publisher");
-//
-//			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
-//
-//			System.out.println("Hello");
-//
-//			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
-//					PublicationCIConnector.class.getCanonicalName());
-//
-//			System.out.println("World");
-//
-//			assert this.publicationPOP.connected();
-//			assert this.publicationPOP.getConnector().connected();
-
-			
+	
 		}catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -114,29 +89,23 @@ public class Publisher extends AbstractComponent {
 	public void execute() throws Exception {
 		super.execute();
 		this.logMessage("executing publisher component.");
-		// System.out.println("starting publisher");
 
 		try {
 
-			System.out.println("mpuri " + this.managementBIPURI);
 
 			this.doPortConnection(this.managementPOP.getPortURI(), this.managementBIPURI,
 					ManagementCIConnector.class.getCanonicalName());
 
-			System.out.println("Coucou publisher");
 
 			String uripublicationPort = this.getPublicationUri();
 
-			System.out.println("Hi publisher");
 
 			this.logMessage("L'uri publication du Broker = " + uripublicationPort);
 
-			System.out.println("Hello");
 
 			this.doPortConnection(this.publicationPOP.getPortURI(), uripublicationPort,
 					PublicationCIConnector.class.getCanonicalName());
 
-			System.out.println("World");
 
 			assert this.publicationPOP.connected();
 			assert this.publicationPOP.getConnector().connected();
@@ -167,8 +136,6 @@ public class Publisher extends AbstractComponent {
 		this.logMessage("stopping publisher component.");
 		this.printExecutionLogOnFile("publisher");
 
-		System.out.println(this.publicationPOP.connected());
-		System.out.println(this.managementPOP.connected());
 
 		this.managementPOP.doDisconnection();
 		this.publicationPOP.doDisconnection();
@@ -620,7 +587,6 @@ public class Publisher extends AbstractComponent {
 	 * @throws Exception
 	 */
 	public String getPublicationUri() throws Exception {
-		System.out.println("Dans publisher 1");
 		return this.managementPOP.getPublicationPortURI();
 	}
 

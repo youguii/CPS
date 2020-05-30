@@ -129,7 +129,6 @@ implements ManagementCI{
     
     @Override
     public void subscribe(String topic, MessageFilterI filter, String inboundPortURI) throws Exception {
-		System.out.println("Dans broker port sub 4");
     	this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<Integer>() {
@@ -164,7 +163,6 @@ implements ManagementCI{
 
 	@Override
 	public String getPublicationPortURI() throws Exception {
-		System.out.println("Dans broker port 4");
 		return this.getOwner().handleRequestSync(
 				executorIndex,
         new AbstractComponent.AbstractService<String>() {

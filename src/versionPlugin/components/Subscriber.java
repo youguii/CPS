@@ -6,7 +6,6 @@ import interfaces.MessageFilterI;
 import interfaces.MessageI;
 import interfaces.ReceptionImplementationI;
 import utiles.MessageFilter;
-import utiles.Properties;
 import versionPlugin.plugins.SubscriberPlugin;
 
 public class Subscriber
@@ -70,18 +69,13 @@ implements ReceptionImplementationI{
         super.execute();
         this.logMessage("starting suscriber component.") ;
             
-        System.out.println("Azul a tous");
 
         // Install the plug-in.
 		this.plugin = new SubscriberPlugin(managementBIPURI, subscriberUri) ;
 		
-		System.out.println("Hahahah");
 		plugin.setPluginURI(MY_PLUGIN_URI) ;
 		
-		System.out.println("Mouaaa");
 		this.installPlugin(plugin) ;
-
-        System.out.println("Salut a tous");
 
 		
             // Différents Senarios du Publier
@@ -241,9 +235,20 @@ implements ReceptionImplementationI{
 		});
 
 		// Initialiser un filtre
-		MessageFilter f = new MessageFilter(new Properties());
-		f.getProperties().putProp("Végétarien", true);
-
+		MessageFilterI f = new MessageFilterI() {
+			
+			@Override
+			public boolean filter(MessageI m) throws Exception {
+				//on veut garder les messages avec une longueur < 100 
+				Integer lenM = m.getProperties().getIntProp("lenM");
+				if(lenM != null && lenM > 200) {
+					return false;
+				}
+				return true;
+			}
+		};
+		
+		
 		// Souscrire à un topic avec filtre
 		this.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -258,8 +263,7 @@ implements ReceptionImplementationI{
 		});
 
 		// Initialiser un filtre
-		MessageFilter f2 = new MessageFilter(new Properties());
-		f2.getProperties().putProp("Européen", false);
+		MessageFilter f2 = new MessageFilter(2, null, null, null);
 
 		// Souscrire à un topic avec filtre
 		this.runTask(new AbstractComponent.AbstractTask() {
@@ -273,6 +277,7 @@ implements ReceptionImplementationI{
 				}
 			}
 		});
+
 
 	}
 

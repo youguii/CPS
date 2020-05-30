@@ -1,3 +1,4 @@
+/versionMultiJvm/
 /components/
 /connectors/
 /cvm/
@@ -6,5 +7,4 @@
 /ports/
 /tests/
 /utiles/
-/versionMultiJvm/
 /versionPlugin/

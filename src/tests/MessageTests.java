@@ -6,6 +6,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import interfaces.MessageFilterI;
+import interfaces.MessageI;
 import utiles.Message;
 import utiles.MessageFilter;
 import utiles.Properties;
@@ -15,14 +17,11 @@ public class MessageTests {
 	
 	Properties prop ;
 
-
 	Message m;
 	
-	Properties propf ;	
 	MessageFilter msgf ;
 	
-	Properties propf2 ;
-	MessageFilter msgf2 ;
+	MessageFilterI msgf2 ;
 	
 	
 	@Before
@@ -30,28 +29,27 @@ public class MessageTests {
 		prop = new Properties();
 		initialiseProp();
 		
+		
 		m = new Message("Message-Uri",
 								(new TimeStamp(2, 
 								"192.168.0.1")),
 								prop,
 								"UPMC");
 		
-		propf = new Properties();
-		propf.putProp("Master", "STL");
 		
-		msgf = new MessageFilter(propf);
+		msgf = new MessageFilter(1, 100, "STL", null);
 		
-		propf2 = new Properties();
-		propf2.putProp("Master", "DAC");
-		
-		msgf2 = new MessageFilter(propf2);
+		msgf2 = new MessageFilter(10, null, null, null);
 
 	
 	}
 		
 	public void initialiseProp() throws Exception {
-		prop.putProp("Master", "STL");
-		prop.putProp("Admis", true);
+		prop.putProp("lenM", 5);
+		prop.putProp("topic", "STL");
+		prop.putProp("new", true);
+		prop.putProp("Pi", 3.14 );
+		
 	}
 	
 	@Test
@@ -64,14 +62,29 @@ public class MessageTests {
 	
 	@Test
 	public void testProp() throws Exception {
-		assertEquals( m.getProperties().getStringProp("Master"), "STL");
-		assertEquals( m.getProperties().getBooleanProp("Admis"), true);		
+		assertEquals( m.getProperties().getStringProp("topic"), "STL" );
+		assertEquals( m.getProperties().getBooleanProp("new"), true);
+		assertEquals( m.getProperties().getIntProp("lenM"), 5 );
 	}
 	
 	@Test
 	public void testFilter() throws Exception {
 		assertEquals(msgf.filter(m),true);
 		assertEquals(msgf2.filter(m),false);
+		
+		MessageFilterI filter = new MessageFilterI() {
+			@Override
+			public boolean filter(MessageI m) throws Exception {	
+				if(m.getProperties().getIntProp("lenM") == 5) {
+					return true;
+				}
+				return false;
+			}
+		};
+		
+		assertEquals(filter.filter(m),true);
+		
+		
 	}
 		
 	

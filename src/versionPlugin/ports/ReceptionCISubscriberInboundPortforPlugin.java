@@ -45,7 +45,6 @@ implements ReceptionCI {
 
     @Override
     public void acceptMessage(MessageI m) throws Exception {
-    	System.out.println("reception du message 1"+ m.getURI());
 
     	this.owner.handleRequestSync(
     	    	new AbstractComponent.AbstractService<Void>(this.pluginURI) {

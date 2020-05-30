@@ -91,7 +91,6 @@ public class Broker extends AbstractComponent
 		
 		this.managementBIPURI = managementBIPURI;
 		
-		System.out.println("mburi "+this.managementBIPURI);
 
 		this.subscribersForEachTopic = new HashMap<>();
 		this.portForEachSubscriber = new HashMap<>();
@@ -215,7 +214,6 @@ public class Broker extends AbstractComponent
 		}
 		
 		for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
-			System.out.println("Subb "+p.connected());
 			p.doDisconnection();
 		}
 		super.finalise();
@@ -262,7 +260,6 @@ public class Broker extends AbstractComponent
 		
 		Serializable [] parameters = {m, topic, this.getPublicationPortURI()};
 		
-		System.out.println("on est dans publish avant call :) "+this.managementBIPURI);
 
 		this.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -277,10 +274,6 @@ public class Broker extends AbstractComponent
 			}
 		});
 		
-//		this.broker_manager_op.call(parameters);
-		
-		System.out.println("on est dans publish aprés call :) "+this.managementBIPURI);
-
 		
 		
 		/*
@@ -481,10 +474,6 @@ public class Broker extends AbstractComponent
 			}
 		}
 
-//		if (map.isEmpty())
-//			System.out.println("publish 4 map vide");
-//
-//		// }
 	}
 
 	// ReceptionCI Methods
@@ -499,7 +488,6 @@ public class Broker extends AbstractComponent
 		MessageI msg = null;
 		HashMap<String, MessageFilter> subscribers = new HashMap<>();
 
-		System.out.println("send 1");
 
 		while (true) {
 			publishMethodsStructureLock.lock();
@@ -509,11 +497,9 @@ public class Broker extends AbstractComponent
 					clock1.await();
 				} else {
 					
-					System.out.println("while send"); 
 
 					// On récupère un message et ses subcribers depuis msgToSubscribers
 					for (Map.Entry<MessageI, HashMap<String, MessageFilter>> entry : msgToSubscribers.entrySet()) {
-						System.out.println("for send"); 
 
 						msg = entry.getKey();
 						subscribers = entry.getValue();
@@ -522,7 +508,6 @@ public class Broker extends AbstractComponent
 
 					for (Map.Entry<String, MessageFilter> entry : subscribers.entrySet()) {
 						if (entry.getValue() == null || entry.getValue().filter(msg)) {
-							System.out.println("send for if"); 
 
 							// S'il n'y a pas de filtre ou que le filtre est respecté, on envoie le message
 							synchronized (portForEachSubscriber) {
@@ -554,7 +539,6 @@ public class Broker extends AbstractComponent
 		MessageI[] msgs = null;
 		HashMap<String, MessageFilter> subscribers = new HashMap<>();
 
-		System.out.println("Dans send");
 		while (true) {
 			publishMethodsStructure2Lock.lock();
 
@@ -568,14 +552,12 @@ public class Broker extends AbstractComponent
 						msgs = entry.getKey();
 						subscribers = entry.getValue();
 						
-						System.out.println("Dans send for");
 						break;
 					}
 
 					for (Map.Entry<String, MessageFilter> entry : subscribers.entrySet()) {
 						boolean res = true;
 						if (entry.getValue() != null)
-							System.out.println("Dans send if");
 
 							// Teste la présence du filtre
 							for (MessageI m : msgs) {
@@ -997,10 +979,7 @@ public class Broker extends AbstractComponent
 			}
 		}
 
-//		if (map.isEmpty())
-//			System.out.println("publish 4 map vide");
-//
-//		// }
+
 	}
 
 	@Override
@@ -1011,7 +990,6 @@ public class Broker extends AbstractComponent
 		String [] topics = null;
 		String uriPublication = null;
 		
-		System.out.println("on est dans call :) "+this.managementBIPURI);
 		if(params[2] instanceof String ) {
 			uriPublication = (String) params[2];
 			if(!(uriPublication.equals(this.getPublicationPortURI()))) {
@@ -1019,7 +997,6 @@ public class Broker extends AbstractComponent
 					m = (MessageI) params[0];
 					if(params[1] instanceof String){
 						topic = (String) params[1];
-						System.out.println("le contenu du message recu = "+m.getURI());
 						receive(m, topic);
 					}else{
 						topics = (String[]) params[1];

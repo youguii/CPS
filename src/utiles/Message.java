@@ -5,7 +5,11 @@ import interfaces.MessageI;
 
 public class Message implements MessageI {
 
-    protected String uri;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected String uri;
     protected TimeStamp ts;
     protected Properties properties;
     protected Serializable content;

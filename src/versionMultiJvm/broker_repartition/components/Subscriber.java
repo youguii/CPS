@@ -1,7 +1,4 @@
-package components;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
+package versionMultiJvm.broker_repartition.components;
 
 import connectors.ManagementCIConnector;
 import fr.sorbonne_u.components.AbstractComponent;
@@ -15,7 +12,7 @@ import interfaces.ReceptionCI;
 import interfaces.ReceptionImplementationI;
 import ports.ManagementCISubscriberOutboundPort;
 import ports.ReceptionCISubscriberInboundPort;
-import testsIntegration.SenariosSubscriber;
+import utiles.MessageFilter;
 
 public class Subscriber 
 extends AbstractComponent 
@@ -36,11 +33,6 @@ implements ReceptionImplementationI {
 	 */
 	protected String subscriberUri;
 
-	
-	/**Tests d'integrations*/
-	protected SenariosSubscriber ss;
-	
-	protected ArrayList<Long> times ; 
 	/**
 	 *
 	 * @param managementBIPURI Uri du port entrant du service management
@@ -74,12 +66,6 @@ implements ReceptionImplementationI {
 		this.tracer.setTitle("subscriber" + uri);
 		this.tracer.setRelativePosition(Integer.parseInt(uri), 2);
 		this.toggleTracing();
-		
-		
-		//initialisation de tests senarios
-		this.ss = new SenariosSubscriber(this);
-		
-		this.times = new ArrayList<>();  
 
 	}
 
@@ -113,21 +99,16 @@ implements ReceptionImplementationI {
 			// Tests d'intégration / Différents Senarios du Publier
 			switch (this.subscriberUri) {
 			case "0":
-				this.ss.senario_One();
-				this.ss.senario_Four(10);
-
+				senario_One();
 				break;
 			case "1":
-				this.ss.senario_Two();
-				this.ss.senario_Four(10);
+				senario_Two();
 				break;
 			case "2":
-				this.ss.senario_Three();
-				this.ss.senario_Four(10);
+				senario_Three();
 				break;
 			default:
-				this.ss.senario_One();
-				this.ss.senario_Four(10);
+				senario_One();
 			}
 
 		} catch (Exception e) {
@@ -138,13 +119,6 @@ implements ReceptionImplementationI {
 
 	@Override
 	public void finalise() throws Exception {
-		System.out.println("---------------affichage des timestamp--------------");
-		for(Long g : times) {
-			System.out.println(g);
-		}
-		
-		
-		
 		this.logMessage("stopping subscriber component.");
 		this.printExecutionLogOnFile("subscriber");
 
@@ -170,6 +144,185 @@ implements ReceptionImplementationI {
 	// Component usefullMethodes
 	// ------------------------------------------------------------------------
 
+	/**
+	 * senario 1: un souscripteur souscrit à un topic, il crée un topic, crée
+	 * plusieurs topic , appelle à la distruction d'un topic
+	 * 
+	 * @throws Exception
+	 */
+	public void senario_One() throws Exception {
+		// Souscrire au topic Danses
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).subscribeToTopic("Danses");
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).createTopic("Animaux");
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+		// Créer plusieurs topics
+		String[] topics = new String[2];
+		topics[0] = "Villes";
+		topics[1] = "Finances";
+
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).createTopics(topics);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+		// Détruire un topic
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).destroyTopic("Villes");
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+	}
+
+	/**
+	 * senario 2: un souscripteur souscrit à un topic, crée plusieurs topic, se
+	 * désabonne d'un topic
+	 * 
+	 * @throws Exception
+	 */
+	public void senario_Two() throws Exception {
+		// Souscription à un topic
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).subscribeToTopic("Maladies");
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+		// Création d'un tableau de topics pour souscrire à plusieurs sujets
+		String[] topics = new String[2];
+		topics[0] = "Arts";
+		topics[1] = "Voyages";
+
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).subscribeToTopics(topics);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).unsubscribe("Arts");
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+	}
+
+	/**
+	 * senario 3: un souscripteur souscrit à un topic, souscrit à un topic avec un
+	 * filtre.
+	 * 
+	 * @throws Exception
+	 */
+	public void senario_Three() throws Exception {
+		// Souscrir à un topic sans filtre
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).subscribeToTopic("Salutations");
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+		// Initialiser un filtre
+		MessageFilterI f = new MessageFilterI() {
+			
+			@Override
+			public boolean filter(MessageI m) throws Exception {
+				//on veut garder les messages avec une longueur < 100 
+				Integer lenM = m.getProperties().getIntProp("lenM");
+				if(lenM != null && lenM > 200) {
+					return false;
+				}
+				return true;
+			}
+		};
+	
+		// Souscrire à un topic avec filtre
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).subscribeWithFilter("Nourriture", f);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+		// Initialiser un filtre
+		MessageFilter f2 = new MessageFilter(2, null, null, null);
+
+		// Souscrire à un topic avec filtre
+		this.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).subscribeWithFilter("Pays", f2);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+	}
+
 	// ReceptionImplementationI Methods
 
 	/**
@@ -180,14 +333,8 @@ implements ReceptionImplementationI {
 	 */
 	@Override
 	public void acceptMessage(MessageI m) throws Exception {
-		//calculs du temps d'acheminement d'un message
-		long t = new Timestamp(System.currentTimeMillis()).getTime();
-		this.times.add( t - m.getTimeStamp().getTime());
-		
 		this.logMessage("Subscriber a reçu " + m.getURI());
 		this.message = m;
-		
-		
 	}
 
 	// ReceptionCI Methods
@@ -199,10 +346,6 @@ implements ReceptionImplementationI {
 	 */
 	@Override
 	public void acceptMessage(MessageI[] ms) throws Exception {
-		//calculs du temps d'acheminement d'un message
-		long t = new Timestamp(System.currentTimeMillis()).getTime();
-		this.times.add( t - ms[0].getTimeStamp().getTime());
-				
 		this.logMessage("Subscriber a reçu des messages dont " + ms[0].getURI());
 	}
 

@@ -66,7 +66,7 @@ public class Broker extends AbstractComponent
 	protected Broker(String managementBIPURI
 
 	) throws Exception {
-		super(8, 0);
+		super(20, 0);
 
 		assert managementBIPURI != null : new PreconditionException("Broker : Broker's management port can't be null");
 
@@ -89,9 +89,9 @@ public class Broker extends AbstractComponent
 		this.clock2 = publishMethodsStructure2Lock.newCondition();
 
 		// Création des pools de threads
-		this.createNewExecutorService(PUBLICATION_POOL_URI, 2, false); // Publication
+		this.createNewExecutorService(PUBLICATION_POOL_URI, 10, false); // Publication
 
-		this.createNewExecutorService(MANAGEMENT_POOL_URI, 4, false); // Management
+		this.createNewExecutorService(MANAGEMENT_POOL_URI, 10, false); // Management
 
 		// Ajout des interfaces, Creation et Publication des ports
 		this.addOfferedInterface(ManagementCI.class);
@@ -156,6 +156,8 @@ public class Broker extends AbstractComponent
 
 	@Override
 	public void finalise() throws Exception {
+		System.out.println("taille de map des messages >> "+msgToSubscribers.size()); 
+		
 		this.logMessage("stopping broker component.");
 		this.printExecutionLogOnFile("broker");
 

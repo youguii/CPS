@@ -4,8 +4,8 @@
 package versionMultiJvm.broker_repartition;
 
 
-import components.Publisher;
-import components.Subscriber;
+import versionMultiJvm.broker_repartition.components.Publisher;
+import versionMultiJvm.broker_repartition.components.Subscriber;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractDistributedCVM;
 import versionMultiJvm.broker_repartition.components.Broker;

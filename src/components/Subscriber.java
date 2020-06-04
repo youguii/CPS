@@ -1,5 +1,11 @@
 package components;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -39,6 +45,8 @@ implements ReceptionImplementationI {
 	
 	/**Tests d'integrations*/
 	protected SenariosSubscriber ss;
+	
+	protected BufferedWriter bOut = null;
 	
 	protected ArrayList<Long> times ; 
 	/**
@@ -80,6 +88,24 @@ implements ReceptionImplementationI {
 		this.ss = new SenariosSubscriber(this);
 		
 		this.times = new ArrayList<>();  
+
+		
+		try{ 
+			File inputFile = new File("/home/mourad/git/Projet cps/CPS/src/testsIntegration/test.txt");
+			bOut = new BufferedWriter(new FileWriter(inputFile)) ;
+			bOut.write("azuuuuul");
+			}catch(IOException e) { 
+				System.out.println(e) ;
+			}finally{
+				if (bOut != null) 
+					try {
+						bOut.close();
+					}catch(IOException ec) {
+						System.out.println(ec) ;
+					}
+			}
+		
+	        
 
 	}
 
@@ -183,7 +209,6 @@ implements ReceptionImplementationI {
 		//calculs du temps d'acheminement d'un message
 		long t = new Timestamp(System.currentTimeMillis()).getTime();
 		this.times.add( t - m.getTimeStamp().getTime());
-		
 		this.logMessage("Subscriber a reçu " + m.getURI());
 		this.message = m;
 		

@@ -25,7 +25,7 @@ public class MessageFilter implements MessageFilterI {
 	}
 
 	@Override
-	public boolean filter(MessageI m) throws Exception {
+	public synchronized boolean  filter(MessageI m) throws Exception {
 		if(minLen != null) {
 			//on fixe une longueur minimal pour les messages 
 			Integer lenM = m.getProperties().getIntProp("lenM");

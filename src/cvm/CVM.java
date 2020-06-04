@@ -82,9 +82,9 @@ extends AbstractCVM {
             // Create an instance of the defined component virtual machine.
             CVM a = new CVM() ;
             // Execute the application.
-            a.startStandardLifeCycle(10000L) ;
+            a.startStandardLifeCycle(50000L) ;
             // Give some time to see the traces (convenience).
-            Thread.sleep(10000L) ;
+            Thread.sleep(50000L) ;
             // Simplifies the termination (termination has yet to be treated
             // properly in BCM).
             System.exit(0) ;

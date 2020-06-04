@@ -124,22 +124,22 @@ public class Publisher extends AbstractComponent {
 			// Tests d'intégration / Différents Senarios du Publier
 			switch (this.publisherUri) {
 			case "0":
+				sp.senario_Four(50, 0);
 				sp.senario_One();
-				sp.senario_Four(10, 0);
 				break;
 			case "1":
+				sp.senario_Four(50, 1);
 				sp.senario_Two();
-				sp.senario_Four(10, 1);
 
 				break;
 			case "2":
+				sp.senario_Four(50, 2);
 				sp.senario_Three();
-				sp.senario_Four(10, 2);
 
 				break;
 			default:
+				sp.senario_Four(50, 3);
 				sp.senario_One();
-				sp.senario_Four(10, 3);
 
 			}
 

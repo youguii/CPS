@@ -13,14 +13,14 @@ public interface PropertiesI extends Serializable {
 	public void putProp(String name, short v) throws Exception;
 	public void putProp(String name, String v) throws Exception;
 	
-	public boolean getBooleanProp (String name) throws Exception;
-	public byte getByteProp (String name) throws Exception;
-	public char getCharProp (String name) throws Exception;
-	public double getDoubleProp (String name) throws Exception;
-	public float getFloatProp (String name) throws Exception;
-	public int getIntProp (String name) throws Exception;
-	public long getLongProp (String name) throws Exception;
-	public short getShortProp (String name) throws Exception;
+	public Boolean getBooleanProp (String name) throws Exception;
+	public Byte getByteProp (String name) throws Exception;
+	public Character getCharProp (String name) throws Exception;
+	public Double getDoubleProp (String name) throws Exception;
+	public Float getFloatProp (String name) throws Exception;
+	public Integer getIntProp (String name) throws Exception;
+	public Long getLongProp (String name) throws Exception;
+	public Short getShortProp (String name) throws Exception;
 	public String getStringProp (String name) throws Exception;
 
 }

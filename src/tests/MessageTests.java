@@ -64,7 +64,7 @@ public class MessageTests {
 	public void testProp() throws Exception {
 		assertEquals( m.getProperties().getStringProp("topic"), "STL" );
 		assertEquals( m.getProperties().getBooleanProp("new"), true);
-		assertEquals( m.getProperties().getIntProp("lenM"), 5 );
+		assertEquals( m.getProperties().getIntProp("lenM"), Integer.valueOf(5) );
 	}
 	
 	@Test

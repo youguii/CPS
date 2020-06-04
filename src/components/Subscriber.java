@@ -51,7 +51,7 @@ implements ReceptionImplementationI {
 
 			throws Exception {
 
-		super(1, 1);
+		super(20, 0);
 
 		assert managementBIPURI != null : new PreconditionException(
 				"Suscriber : Broker's management port can't be null");
@@ -113,21 +113,21 @@ implements ReceptionImplementationI {
 			// Tests d'intégration / Différents Senarios du Publier
 			switch (this.subscriberUri) {
 			case "0":
+				this.ss.senario_Four(50);
 				this.ss.senario_One();
-				this.ss.senario_Four(10);
 
 				break;
 			case "1":
+				this.ss.senario_Four(50);
 				this.ss.senario_Two();
-				this.ss.senario_Four(10);
 				break;
-			case "2":
+			case "2":	
+				this.ss.senario_Four(50);
 				this.ss.senario_Three();
-				this.ss.senario_Four(10);
 				break;
 			default:
+				this.ss.senario_Four(50);
 				this.ss.senario_One();
-				this.ss.senario_Four(10);
 			}
 
 		} catch (Exception e) {
@@ -138,10 +138,7 @@ implements ReceptionImplementationI {
 
 	@Override
 	public void finalise() throws Exception {
-		System.out.println("---------------affichage des timestamp--------------");
-		for(Long g : times) {
-			System.out.println(g);
-		}
+
 		
 		
 		
@@ -155,7 +152,10 @@ implements ReceptionImplementationI {
 
 	@Override
 	public void shutdown() throws ComponentShutdownException {
-
+		System.out.println("---------------affichage des timestamp--------------");
+		for(Long g : times) {
+			System.out.println(g);
+		}
 		try {
 			this.managementSubscriberOP.unpublishPort();
 			this.receptionSubscriberIP.unpublishPort();
@@ -200,9 +200,10 @@ implements ReceptionImplementationI {
 	@Override
 	public void acceptMessage(MessageI[] ms) throws Exception {
 		//calculs du temps d'acheminement d'un message
-		long t = new Timestamp(System.currentTimeMillis()).getTime();
-		this.times.add( t - ms[0].getTimeStamp().getTime());
-				
+		for(int i = 0 ; i< ms.length; i++) {
+			long t = new Timestamp(System.currentTimeMillis()).getTime();
+			this.times.add( t - ms[i].getTimeStamp().getTime());
+		}		
 		this.logMessage("Subscriber a reçu des messages dont " + ms[0].getURI());
 	}
 

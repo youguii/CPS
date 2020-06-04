@@ -92,44 +92,44 @@ public class Properties implements PropertiesI {
 	}
 
 	@Override
-	public boolean getBooleanProp(String name) throws Exception {
+	public Boolean getBooleanProp(String name) throws Exception {
 
 		return boolProperties.get(name);
 	}
 
 	@Override
-	public byte getByteProp(String name) throws Exception {
+	public Byte getByteProp(String name) throws Exception {
 
 		return byteProperties.get(name);
 	}
 
 	@Override
-	public char getCharProp(String name) throws Exception {
+	public Character getCharProp(String name) throws Exception {
 		return charProperties.get(name);
 	}
 
 	@Override
-	public double getDoubleProp(String name) throws Exception {
+	public Double getDoubleProp(String name) throws Exception {
 		return doubleProperties.get(name);
 	}
 
 	@Override
-	public float getFloatProp(String name) throws Exception {
+	public Float getFloatProp(String name) throws Exception {
 		return floatProperties.get(name);
 	}
 
 	@Override
-	public int getIntProp(String name) throws Exception {
+	public Integer getIntProp(String name) throws Exception {
 		return intProperties.get(name);
 	}
 
 	@Override
-	public long getLongProp(String name) throws Exception {
+	public Long getLongProp(String name) throws Exception {
 		return longProperties.get(name);
 	}
 
 	@Override
-	public short getShortProp(String name) throws Exception {
+	public Short getShortProp(String name) throws Exception {
 		return shortProperties.get(name);
 	}
 

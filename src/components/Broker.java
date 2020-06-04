@@ -123,7 +123,7 @@ public class Broker extends AbstractComponent
 		this.logMessage("starting broker component.");
 
 		try {
-			for(int i = 0; i < 3 ; i++) {
+			for(int i = 0; i < 1 ; i++) {
 				this.runTask(new AbstractComponent.AbstractTask() {
 					@Override
 					public void run() {
@@ -156,8 +156,7 @@ public class Broker extends AbstractComponent
 
 	@Override
 	public void finalise() throws Exception {
-		System.out.println("taille de map des messages >> "+msgToSubscribers.size()); 
-		
+
 		this.logMessage("stopping broker component.");
 		this.printExecutionLogOnFile("broker");
 
@@ -170,6 +169,10 @@ public class Broker extends AbstractComponent
 
 	@Override
 	public void shutdown() throws ComponentShutdownException {
+		publishMethodsStructureLock.lock();
+
+			System.out.println("taille de map des messages >> "+msgToSubscribers.size()); 
+		publishMethodsStructureLock.unlock();
 
 		try {
 			// Dépublication des ports
@@ -218,13 +221,14 @@ public class Broker extends AbstractComponent
 		}
 
 		// On associe les abonnés au message
+		
 		if (!map.isEmpty()) {
 			publishMethodsStructureLock.lock();
 			try {
 
 				msgToSubscribers.put(m, map);
 
-				clock1.signal();
+				clock1.signalAll();
 
 			} finally {
 				publishMethodsStructureLock.unlock();
@@ -266,7 +270,7 @@ public class Broker extends AbstractComponent
 				// Associer le message aux bons abonnés
 				msgToSubscribers.put(m, map);
 
-				clock1.signal();
+				clock1.signalAll();
 
 			} finally {
 				publishMethodsStructureLock.unlock();
@@ -304,7 +308,7 @@ public class Broker extends AbstractComponent
 
 				msgsToSubscribers.put(ms, map);
 
-				clock2.signal();
+				clock2.signalAll();
 
 			} finally {
 				publishMethodsStructure2Lock.unlock();
@@ -346,7 +350,7 @@ public class Broker extends AbstractComponent
 			try {
 				msgsToSubscribers.put(ms, map);
 
-				clock2.signal();
+				clock2.signalAll();
 
 			} finally {
 				publishMethodsStructure2Lock.unlock();
@@ -356,6 +360,7 @@ public class Broker extends AbstractComponent
 
 	}
 
+	
 	// ReceptionCI Methods
 	/**
 	 * methode qui fait appel au bon port du subscriber pour lui transmettre un
@@ -368,16 +373,14 @@ public class Broker extends AbstractComponent
 		MessageI msg = null;
 		HashMap<String, MessageFilter> subscribers = new HashMap<>();
 
-
+		int icpt = 0;
 		while (true) {
 			publishMethodsStructureLock.lock();
-
 			try {
-				if (msgToSubscribers.isEmpty()) {
+				if(msgToSubscribers.isEmpty()) { 
 					clock1.await();
 				} else {
 					
-
 					// On récupère un message et ses subcribers depuis msgToSubscribers
 					for (Map.Entry<MessageI, HashMap<String, MessageFilter>> entry : msgToSubscribers.entrySet()) {
 
@@ -385,18 +388,30 @@ public class Broker extends AbstractComponent
 						subscribers = entry.getValue();
 						break;
 					}
-
+					
+					//|| entry.getValue().filter(msg)
 					for (Map.Entry<String, MessageFilter> entry : subscribers.entrySet()) {
-						if (entry.getValue() == null || entry.getValue().filter(msg)) {
+						if (entry.getValue() == null ) {
+						
+							System.out.println("compteur >>>>>"+ icpt++);
 
 							// S'il n'y a pas de filtre ou que le filtre est respecté, on envoie le message
 							synchronized (portForEachSubscriber) {
 								this.logMessage("Broker envoie à Subscriber 1 ");
 								portForEachSubscriber.get(entry.getKey()).acceptMessage(msg);
+								System.out.println("envoyééééééééééééééééééééééééééééééééé");
+							}
+						}else if( entry.getValue().filter(msg)){
+							synchronized (portForEachSubscriber) {
+								this.logMessage("Broker envoie à Subscriber 1 ");
+								portForEachSubscriber.get(entry.getKey()).acceptMessage(msg);
+								System.out.println("envoyééééééééééééééééééééééééééééééééé");
 							}
 						}
 					}
 					msgToSubscribers.remove(msg);
+
+
 				}
 
 			} finally {
@@ -423,7 +438,7 @@ public class Broker extends AbstractComponent
 			publishMethodsStructure2Lock.lock();
 
 			try {
-				if (msgsToSubscribers.isEmpty()) {
+				if(msgsToSubscribers.isEmpty()) {
 					clock2.await();
 				} else {
 
@@ -456,7 +471,6 @@ public class Broker extends AbstractComponent
 					}
 					msgsToSubscribers.remove(msgs);
 				}
-
 			} finally {
 				publishMethodsStructure2Lock.unlock();
 			}

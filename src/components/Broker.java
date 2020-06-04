@@ -377,9 +377,8 @@ public class Broker extends AbstractComponent
 		while (true) {
 			publishMethodsStructureLock.lock();
 			try {
-				if(msgToSubscribers.isEmpty()) { 
+				while(msgToSubscribers.isEmpty()) 
 					clock1.await();
-				} else {
 					
 					// On récupère un message et ses subcribers depuis msgToSubscribers
 					for (Map.Entry<MessageI, HashMap<String, MessageFilter>> entry : msgToSubscribers.entrySet()) {
@@ -412,7 +411,6 @@ public class Broker extends AbstractComponent
 					msgToSubscribers.remove(msg);
 
 
-				}
 
 			} finally {
 				publishMethodsStructureLock.unlock();
@@ -438,9 +436,8 @@ public class Broker extends AbstractComponent
 			publishMethodsStructure2Lock.lock();
 
 			try {
-				if(msgsToSubscribers.isEmpty()) {
+				while(msgsToSubscribers.isEmpty()) 
 					clock2.await();
-				} else {
 
 					// On récupère un message et ses subcribers depuis msgToSubscribers
 					for (Map.Entry<MessageI[], HashMap<String, MessageFilter>> entry : msgsToSubscribers.entrySet()) {
@@ -470,7 +467,6 @@ public class Broker extends AbstractComponent
 						}
 					}
 					msgsToSubscribers.remove(msgs);
-				}
 			} finally {
 				publishMethodsStructure2Lock.unlock();
 			}

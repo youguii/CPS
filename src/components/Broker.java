@@ -192,7 +192,6 @@ public class Broker extends AbstractComponent
 			portForEachSubscriberLock.readLock().lock();
 			for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
 				p.unpublishPort();
-				//p.destroyPort();
 			}			
 			portForEachSubscriberLock.readLock().unlock();
 
@@ -482,7 +481,6 @@ public class Broker extends AbstractComponent
 			} finally {
 				publishMethodsStructure2Lock.unlock();
 			}
-			//}
 		}
 
 	}

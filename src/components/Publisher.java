@@ -70,9 +70,9 @@ public class Publisher extends AbstractComponent {
 		this.publicationPOP.publishPort();
 
 		// Affichage de la console
-		this.tracer.setTitle("publisher" + uri);
-		this.tracer.setRelativePosition(Integer.parseInt(uri), 1);
-		this.toggleTracing();
+//		this.tracer.setTitle("publisher" + uri);
+//		this.tracer.setRelativePosition(Integer.parseInt(uri), 1);
+//		this.toggleTracing();
 
 		
 		//initialisation de tests senarios
@@ -124,21 +124,21 @@ public class Publisher extends AbstractComponent {
 			// Tests d'intégration / Différents Senarios du Publier
 			switch (this.publisherUri) {
 			case "0":
-				sp.senario_Four(20, 0);
-				sp.senario_One();
+				sp.senario_Four(20, Integer.parseInt(this.publisherUri));
+				//sp.senario_One();
 				break;
 			case "1":
-				//sp.senario_Four(20, 1);
-				sp.senario_Two();
+				sp.senario_Four(20, Integer.parseInt(this.publisherUri));
+				//sp.senario_Two();
 
 				break;
 			case "2":
-				sp.senario_Four(20, 2);
-				sp.senario_Three();
+				sp.senario_Four(20, Integer.parseInt(this.publisherUri));
+				//sp.senario_Three();
 
 				break;
 			default:
-				sp.senario_Four(20, 3);
+				sp.senario_Four(20, Integer.parseInt(this.publisherUri));
 				//sp.senario_One();
 
 			}

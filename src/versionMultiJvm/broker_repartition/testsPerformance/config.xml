@@ -1,0 +1,23 @@
+<deployment>
+   <hosts>
+    <host name="localhost"
+          dir="/home/mourad/Tests/"/>
+  </hosts>
+  <cyclicBarrier   hostname="localhost" port="55253"/>
+  <globalRegistry  hostname="localhost" port="55252"/>
+  <rmiRegistryPort no="55999"/>
+  <jvms2hostnames>
+    <jvm2hostname jvmuri="jvm1"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="versionMultiJvm.broker_repartition.testsPerformance.DistributedCVM"/>
+    <jvm2hostname jvmuri="jvm2"
+        rmiRegistryCreator="false"
+        hostname="localhost"
+        mainclass="versionMultiJvm.broker_repartition.testsPerformance.DistributedCVM"/>
+	<jvm2hostname jvmuri="jvm3"
+        rmiRegistryCreator="false"
+        hostname="localhost"
+        mainclass="versionMultiJvm.broker_repartition.testsPerformance.DistributedCVM"/>       
+  </jvms2hostnames>
+</deployment>

@@ -22,7 +22,7 @@ public class SenariosPublisher {
 	 * 
 	 * @throws Exception
 	 */
-	public void senario_One() throws Exception {
+	public void senario_One(int uri) throws Exception {
 		// Création de topic
 		this.publisher.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -69,7 +69,7 @@ public class SenariosPublisher {
 				try {
 					Thread.sleep(1000);
 					((Publisher) this.getTaskOwner()).publishMessage("Salutations",
-							publisher.generateMsg("mp1", null, "Hello in english"));
+							publisher.generateMsg("mp1_"+uri, null, "Hello in english"));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -110,7 +110,7 @@ public class SenariosPublisher {
 					for (int i = 2000; i < 2005; i++) {
 						Thread.sleep(500);
 						((Publisher) this.getTaskOwner()).publishMessage("Saisons",
-								publisher.generateMsg("mp" + i, null, "L'hiver " + i + " il a fait froid"));
+								publisher.generateMsg("mp" + i+"_"+uri, null, "L'hiver " + i + " il a fait froid"));
 					}
 				} catch (Exception e) {
 					throw new RuntimeException(e);
@@ -140,7 +140,7 @@ public class SenariosPublisher {
 	 * 
 	 * @throws Exception
 	 */
-	public void senario_Two() throws Exception {
+	public void senario_Two(int uri) throws Exception {
 
 		// Création de topic
 		this.publisher.runTask(new AbstractComponent.AbstractTask() {
@@ -182,7 +182,7 @@ public class SenariosPublisher {
 		});
 
 		// Création et publication de messages sans filtre et avec un seul topic
-		Message[] msgs = { publisher.generateMsg("mp2", null, "Français"), publisher.generateMsg("mp3", null, "Anglais") };
+		Message[] msgs = { publisher.generateMsg("mp2_"+uri, null, "Français"), publisher.generateMsg("mp3_"+uri, null, "Anglais") };
 
 		this.publisher.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -202,7 +202,7 @@ public class SenariosPublisher {
 			public void run() {
 				try {
 					Thread.sleep(1000);
-					((Publisher) this.getTaskOwner()).publishMessage("Danses", publisher.generateMsg("mp4", null, "Salsa"));
+					((Publisher) this.getTaskOwner()).publishMessage("Danses", publisher.generateMsg("mp4_"+uri, null, "Salsa"));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -216,7 +216,7 @@ public class SenariosPublisher {
 			public void run() {
 				try {
 					Thread.sleep(1000);
-					((Publisher) this.getTaskOwner()).publishMessage("Nourriture", publisher.generateMsg("mp5Bis", null, "Inde"));
+					((Publisher) this.getTaskOwner()).publishMessage("Nourriture", publisher.generateMsg("mp5Bis_"+uri, null, "Inde"));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -233,7 +233,7 @@ public class SenariosPublisher {
 					HashMap<String, Object> props = new HashMap<String, Object>();
 					props.put("Europen", false);
 					
-					((Publisher) this.getTaskOwner()).publishMessage("Pays", publisher.generateMsg("mp5", null, "Inde"));
+					((Publisher) this.getTaskOwner()).publishMessage("Pays", publisher.generateMsg("mp5_"+uri, null, "Inde"));
 				
 				} catch (Exception e) {
 					throw new RuntimeException(e);
@@ -249,7 +249,7 @@ public class SenariosPublisher {
 				try {
 					Thread.sleep(1000);
 					((Publisher) this.getTaskOwner())
-							.publishMessageWithManyTopics(publisher.generateMsg("mp6", null, "Tango"), topics);
+							.publishMessageWithManyTopics(publisher.generateMsg("mp6_"+uri, null, "Tango"), topics);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -265,7 +265,7 @@ public class SenariosPublisher {
 	 * @throws Exception
 	 */
 
-	public void senario_Three() throws Exception {
+	public void senario_Three(int uri) throws Exception {
 		// Publication de plusieurs messages
 		this.publisher.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -274,7 +274,7 @@ public class SenariosPublisher {
 					for (int counter = 100; counter < 104; counter++) {
 						Thread.sleep(500);
 						((Publisher) this.getTaskOwner()).publishMessage("Pays",
-								publisher.generateMsg("mp" + counter, null, "Salut" + counter));
+								publisher.generateMsg("mp" + counter+"_"+uri, null, "Salut" + counter));
 					}
 				} catch (Exception e) {
 					throw new RuntimeException(e);
@@ -283,7 +283,7 @@ public class SenariosPublisher {
 		});
 
 		// Création de messages et topics et publication
-		Message[] msgs = { publisher.generateMsg("mp7", null, "Japon"), publisher.generateMsg("mp8", null, "Écosse") };
+		Message[] msgs = { publisher.generateMsg("mp7_"+uri, null, "Japon"), publisher.generateMsg("mp8_"+uri, null, "Écosse") };
 
 		String[] topics = { "Cultures", "Pays" };
 		this.publisher.runTask(new AbstractComponent.AbstractTask() {

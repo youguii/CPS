@@ -147,7 +147,6 @@ public class SenariosSubscriber {
 			public synchronized boolean filter(MessageI m) throws Exception {
 				//on veut garder les messages avec une longueur < 100 
 				Integer lenM = m.getProperties().getIntProp("lenM");
-				System.out.println("Na3yaaaaaaaaaa"+ lenM);
 				if(lenM != null && lenM > 200) {
 					return false;
 				}
@@ -211,12 +210,12 @@ public class SenariosSubscriber {
 
 	public void senario_Four(int i) throws Exception {
 		//tableau de topics 
-		String[] topics = {"Sport", "Peche", "Voyage", "Musique", "Art", "Theatre", "Cinema", "Histoire", "Science", "Divertissement", 
-				"Literature", "Medecine", "Mathematique", "Informatique", "Algorithmique", "Composant", "Electronique", "Commerce", "Hight-Tech", "People"};
+		String[] topics = {"Sport", "Peche", "Voyage", "Musique", "Art" /*, "Theatre", "Cinema", "Histoire", "Science", "Divertissement", 
+				"Literature", "Medecine", "Mathematique", "Informatique", "Algorithmique", "Composant", "Electronique", "Commerce", "Hight-Tech", "People"*/};
 		
 		
 		//int r = Double.valueOf(Math.random()*19).intValue();
-		int r = i % 20;
+		int r = i % 5;
 		
 		this.subscriber.subscribeToTopic(topics[r]);
 		if(i > 0) {	

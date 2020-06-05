@@ -28,12 +28,9 @@ public class MessageFilter implements MessageFilterI {
 
 	@Override
 	public synchronized boolean  filter(MessageI m) throws Exception {
-		System.out.println("Dans filter    "+m.getURI());
 		if(minLen != null) {
-			System.out.println(minLen);
 			//on fixe une longueur minimal pour les messages 
 			Integer lenM = m.getProperties().getIntProp("lenM");
-			System.out.println("lenm "+lenM);
 			if(lenM == null || lenM < minLen) {
 				return false;
 			}

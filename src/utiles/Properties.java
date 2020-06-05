@@ -10,11 +10,12 @@ public class Properties implements PropertiesI {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	/* Propreties contient 9 maps de 9 types primitifs différents
-	 * Ce qui nous permet d'avoir plusieurs propriétés de meme type de valeurs mais de clés différentes
+
+	/*
+	 * Propreties contient 9 maps de 9 types primitifs différents Ce qui nous permet
+	 * d'avoir plusieurs propriétés de meme type de valeurs mais de clés différentes
 	 */
-	
+
 	protected HashMap<String, Boolean> boolProperties;
 	protected HashMap<String, String> strProperties;
 	protected HashMap<String, Integer> intProperties;
@@ -40,55 +41,55 @@ public class Properties implements PropertiesI {
 	@Override
 	public void putProp(String name, boolean v) throws Exception {
 
-		boolProperties.put(name, v);
+		boolProperties.put(name, Boolean.valueOf(v));
 	}
 
 	@Override
 	public void putProp(String name, byte v) throws Exception {
 
-		byteProperties.put(name, v);
+		byteProperties.put(name, Byte.valueOf(v));
 	}
 
 	@Override
 	public void putProp(String name, char v) throws Exception {
 
-		charProperties.put(name, v);
+		charProperties.put(name, Character.valueOf(v));
 	}
 
 	@Override
 	public void putProp(String name, double v) throws Exception {
 
-		doubleProperties.put(name, v);
+		doubleProperties.put(name, Double.valueOf(v));
 	}
 
 	@Override
 	public void putProp(String name, float v) throws Exception {
 
-		floatProperties.put(name, v);
+		floatProperties.put(name, Float.valueOf(v));
 	}
 
 	@Override
 	public void putProp(String name, int v) throws Exception {
 
-		intProperties.put(name, v);
+		intProperties.put(name, Integer.valueOf(v));
 	}
 
 	@Override
 	public void putProp(String name, long v) throws Exception {
 
-		longProperties.put(name, v);
+		longProperties.put(name, Long.valueOf(v));
 	}
 
 	@Override
 	public void putProp(String name, short v) throws Exception {
 
-		shortProperties.put(name, v);
+		shortProperties.put(name, Short.valueOf(v));
 	}
 
 	@Override
 	public void putProp(String name, String v) throws Exception {
 
-		strProperties.put(name, v);
+		strProperties.put(name, String.valueOf(v));
 	}
 
 	@Override

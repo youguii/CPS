@@ -138,6 +138,38 @@ public class SenariosSubscriber {
 	 * @throws Exception
 	 */
 	public void senario_Three() throws Exception {
+		
+
+		// Initialiser un filtre
+		MessageFilter f = new MessageFilter() {
+			
+			@Override
+			public synchronized boolean filter(MessageI m) throws Exception {
+				//on veut garder les messages avec une longueur < 100 
+				Integer lenM = m.getProperties().getIntProp("lenM");
+				System.out.println("Na3yaaaaaaaaaa"+ lenM);
+				if(lenM != null && lenM > 200) {
+					return false;
+				}
+				return true;
+			}
+		};
+		
+//		MessageFilter f = new MessageFilter(2, null, null, null);
+
+		// Souscrire à un topic avec filtre
+		this.subscriber.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Subscriber) this.getTaskOwner()).subscribeWithFilter("Nourriture", f);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		
 		// Souscrir à un topic sans filtre
 		this.subscriber.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -151,32 +183,6 @@ public class SenariosSubscriber {
 			}
 		});
 
-		// Initialiser un filtre
-		MessageFilterI f = new MessageFilterI() {
-			
-			@Override
-			public boolean filter(MessageI m) throws Exception {
-				//on veut garder les messages avec une longueur < 100 
-				Integer lenM = m.getProperties().getIntProp("lenM");
-				if(lenM != null && lenM > 200) {
-					return false;
-				}
-				return true;
-			}
-		};
-	
-		// Souscrire à un topic avec filtre
-		this.subscriber.runTask(new AbstractComponent.AbstractTask() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(1000);
-					((Subscriber) this.getTaskOwner()).subscribeWithFilter("Nourriture", f);
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-		});
 
 		// Initialiser un filtre
 		MessageFilter f2 = new MessageFilter(2, null, null, null);

@@ -87,25 +87,8 @@ implements ReceptionImplementationI {
 		//initialisation de tests senarios
 		this.ss = new SenariosSubscriber(this);
 		
-		this.times = new ArrayList<>();  
+//		this.times = new ArrayList<>();  
 
-		
-		try{ 
-			File inputFile = new File("/home/mourad/git/Projet cps/CPS/src/testsIntegration/test.txt");
-			bOut = new BufferedWriter(new FileWriter(inputFile)) ;
-			bOut.write("azuuuuul");
-			}catch(IOException e) { 
-				System.out.println(e) ;
-			}finally{
-				if (bOut != null) 
-					try {
-						bOut.close();
-					}catch(IOException ec) {
-						System.out.println(ec) ;
-					}
-			}
-		
-	        
 
 	}
 
@@ -139,20 +122,20 @@ implements ReceptionImplementationI {
 			// Tests d'intégration / Différents Senarios du Publier
 			switch (this.subscriberUri) {
 			case "0":
-				this.ss.senario_Four(50);
+				this.ss.senario_Four(20);
 				this.ss.senario_One();
 
 				break;
 			case "1":
-				this.ss.senario_Four(50);
+				this.ss.senario_Four(20);
 				this.ss.senario_Two();
 				break;
 			case "2":	
-				this.ss.senario_Four(50);
+				//this.ss.senario_Four(20);
 				this.ss.senario_Three();
 				break;
 			default:
-				this.ss.senario_Four(50);
+				this.ss.senario_Four(20);
 				this.ss.senario_One();
 			}
 
@@ -179,9 +162,9 @@ implements ReceptionImplementationI {
 	@Override
 	public void shutdown() throws ComponentShutdownException {
 		System.out.println("---------------affichage des timestamp--------------");
-		for(Long g : times) {
-			System.out.println(g);
-		}
+//		for(Long g : times) {
+//			System.out.println(g);
+//		}
 		try {
 			this.managementSubscriberOP.unpublishPort();
 			this.receptionSubscriberIP.unpublishPort();
@@ -207,8 +190,8 @@ implements ReceptionImplementationI {
 	@Override
 	public void acceptMessage(MessageI m) throws Exception {
 		//calculs du temps d'acheminement d'un message
-		long t = new Timestamp(System.currentTimeMillis()).getTime();
-		this.times.add( t - m.getTimeStamp().getTime());
+//		long t = new Timestamp(System.currentTimeMillis()).getTime();
+//		this.times.add( t - m.getTimeStamp().getTime());
 		this.logMessage("Subscriber a reçu " + m.getURI());
 		this.message = m;
 		
@@ -225,10 +208,10 @@ implements ReceptionImplementationI {
 	@Override
 	public void acceptMessage(MessageI[] ms) throws Exception {
 		//calculs du temps d'acheminement d'un message
-		for(int i = 0 ; i< ms.length; i++) {
-			long t = new Timestamp(System.currentTimeMillis()).getTime();
-			this.times.add( t - ms[i].getTimeStamp().getTime());
-		}		
+//		for(int i = 0 ; i< ms.length; i++) {
+//			long t = new Timestamp(System.currentTimeMillis()).getTime();
+//			this.times.add( t - ms[i].getTimeStamp().getTime());
+//		}		
 		this.logMessage("Subscriber a reçu des messages dont " + ms[0].getURI());
 	}
 

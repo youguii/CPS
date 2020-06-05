@@ -2,6 +2,7 @@ package components;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -28,17 +29,20 @@ public class Broker extends AbstractComponent
 		implements ManagementImplementationI, SubscriptionImplementationI, PublicationsImplementationI {
 
 	/** Topic associé à Uri du sbscriber + messageFilter */
-	protected HashMap<String, HashMap<String, MessageFilter>> subscribersForEachTopic;
+	protected HashMap<String, HashMap<String, MessageFilterI>> subscribersForEachTopic;
 	/** URI du subscriber associé au port connecté vers lui */
 	protected HashMap<String, ReceptionCIBrokerOutboundPort> portForEachSubscriber;
 	/** Maps qui contienent les messages */
-	protected HashMap<MessageI, HashMap<String, MessageFilter>> msgToSubscribers;
-	protected HashMap<MessageI[], HashMap<String, MessageFilter>> msgsToSubscribers;
+	protected HashMap<MessageI, HashMap<String, MessageFilterI>> msgToSubscribers;
+	protected HashMap<MessageI[], HashMap<String, MessageFilterI>> msgsToSubscribers;
 
 	/** les locks utilisé pour la synchroniation */
 	protected final ReentrantReadWriteLock sub4TopicLock;
 	protected final ReentrantLock publishMethodsStructureLock;
 	protected final ReentrantLock publishMethodsStructure2Lock;
+	
+	protected final ReentrantReadWriteLock portForEachSubscriberLock;
+
 	/** les conditions utilisé avec les locks */
 	final Condition clock1;
 	final Condition clock2;
@@ -66,7 +70,7 @@ public class Broker extends AbstractComponent
 	protected Broker(String managementBIPURI
 
 	) throws Exception {
-		super(20, 0);
+		super(10, 0);
 
 		assert managementBIPURI != null : new PreconditionException("Broker : Broker's management port can't be null");
 
@@ -85,6 +89,8 @@ public class Broker extends AbstractComponent
 		this.publishMethodsStructureLock = new ReentrantLock(); 
 		this.publishMethodsStructure2Lock = new ReentrantLock(); 
 
+		this.portForEachSubscriberLock= new ReentrantReadWriteLock();
+		
 		this.clock1 = publishMethodsStructureLock.newCondition();
 		this.clock2 = publishMethodsStructure2Lock.newCondition();
 
@@ -161,9 +167,13 @@ public class Broker extends AbstractComponent
 		this.printExecutionLogOnFile("broker");
 
 		// Déconnexion des ports connectés
+
+		portForEachSubscriberLock.readLock().lock();
 		for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
 			p.doDisconnection();
 		}
+		portForEachSubscriberLock.readLock().unlock();
+			
 		super.finalise();
 	}
 
@@ -179,14 +189,14 @@ public class Broker extends AbstractComponent
 			this.managementBIP.unpublishPort();
 			this.publicationBIP.unpublishPort();
 
+			portForEachSubscriberLock.readLock().lock();
+			for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
+				p.unpublishPort();
+				//p.destroyPort();
+			}			
+			portForEachSubscriberLock.readLock().unlock();
 
-			synchronized (portForEachSubscriber) {
-				for (ReceptionCIBrokerOutboundPort p : portForEachSubscriber.values()) {
-					p.unpublishPort();
-					p.destroyPort();
-				}
-			}
-
+			
 		} catch (Exception e) {
 			throw new ComponentShutdownException(e);
 		}
@@ -203,7 +213,7 @@ public class Broker extends AbstractComponent
 	public void publish(MessageI m, String topic) throws Exception {
 		this.logMessage("Broker, a recu un message de publisher");
 
-		HashMap<String, MessageFilter> map = new HashMap<>();
+		HashMap<String, MessageFilterI> map = new HashMap<>();
 		/*
 		 * S'il y a des abonnés au topic: On les récupère dans une map intermediaire
 		 * pour les associer au message Si non si le topic n'existe pas on le crée
@@ -225,10 +235,8 @@ public class Broker extends AbstractComponent
 		if (!map.isEmpty()) {
 			publishMethodsStructureLock.lock();
 			try {
-
-				msgToSubscribers.put(m, map);
-
-				clock1.signalAll();
+					msgToSubscribers.put(m, map);
+					clock1.signal();
 
 			} finally {
 				publishMethodsStructureLock.unlock();
@@ -242,7 +250,7 @@ public class Broker extends AbstractComponent
 	public void publish(MessageI m, String[] topics) throws Exception {
 		this.logMessage("Broker, a recu un message à plusieurs topics");
 
-		HashMap<String, MessageFilter> map = new HashMap<>();
+		HashMap<String, MessageFilterI> map = new HashMap<>();
 
 		/*
 		 * Pour chauqe topic, s'il y a des abonnés au topic: On les récupère dans une
@@ -269,8 +277,7 @@ public class Broker extends AbstractComponent
 			try {
 				// Associer le message aux bons abonnés
 				msgToSubscribers.put(m, map);
-
-				clock1.signalAll();
+				clock1.signal();
 
 			} finally {
 				publishMethodsStructureLock.unlock();
@@ -284,7 +291,7 @@ public class Broker extends AbstractComponent
 		this.logMessage("Broker, a recu plusieurs messages");
 
 		// Map va contenir les abonnés à topic
-		HashMap<String, MessageFilter> map = new HashMap<>();
+		HashMap<String, MessageFilterI> map = new HashMap<>();
 
 		/*
 		 * S'il y a des abonnés au topic: On les récupère dans une map intermediaire
@@ -307,8 +314,7 @@ public class Broker extends AbstractComponent
 			try {
 
 				msgsToSubscribers.put(ms, map);
-
-				clock2.signalAll();
+				clock2.signal();
 
 			} finally {
 				publishMethodsStructure2Lock.unlock();
@@ -322,7 +328,7 @@ public class Broker extends AbstractComponent
 
 		this.logMessage("Broker, a recu plusieurs messages de plusieurs topics");
 
-		HashMap<String, MessageFilter> map = new HashMap<>();
+		HashMap<String, MessageFilterI> map = new HashMap<>();
 
 		/*
 		 * Pour chaque topic, s'il y a des abonnés au topic: On les récupère dans une
@@ -348,12 +354,12 @@ public class Broker extends AbstractComponent
 		if (!map.isEmpty()) {
 			publishMethodsStructure2Lock.lock();
 			try {
-				msgsToSubscribers.put(ms, map);
 
-				clock2.signalAll();
+				msgsToSubscribers.put(ms, map);
+				clock2.signal();
 
 			} finally {
-				publishMethodsStructure2Lock.unlock();
+			publishMethodsStructure2Lock.unlock();
 			}
 		}
 
@@ -371,50 +377,52 @@ public class Broker extends AbstractComponent
 	 */
 	public void sendMessageToSubscriber() throws Exception {
 		MessageI msg = null;
-		HashMap<String, MessageFilter> subscribers = new HashMap<>();
+		HashMap<String, MessageFilterI> subscribers = new HashMap<>();
 
-		int icpt = 0;
 		while (true) {
+			
 			publishMethodsStructureLock.lock();
-			try {
-				while(msgToSubscribers.isEmpty()) 
-					clock1.await();
-					
+				try {
+					while(msgToSubscribers.isEmpty()) { 
+						clock1.await();
+					}	
 					// On récupère un message et ses subcribers depuis msgToSubscribers
-					for (Map.Entry<MessageI, HashMap<String, MessageFilter>> entry : msgToSubscribers.entrySet()) {
-
+					for (Entry<MessageI, HashMap<String, MessageFilterI>> entry : msgToSubscribers.entrySet()) {
+	
 						msg = entry.getKey();
 						subscribers = entry.getValue();
 						break;
 					}
 					
-					//|| entry.getValue().filter(msg)
-					for (Map.Entry<String, MessageFilter> entry : subscribers.entrySet()) {
-						if (entry.getValue() == null ) {
+					for (Entry<String, MessageFilterI> entry : subscribers.entrySet()) {
 						
-							System.out.println("compteur >>>>>"+ icpt++);
+						// S'il n'y a pas de filtre, on envoie le message
+						if (entry.getValue() == null ) {
+							portForEachSubscriberLock.readLock().lock();
+							
+							this.logMessage("  ");
+							this.logMessage("Send 1 : Broker envoie un message à Subscriber "+entry.getKey());
 
-							// S'il n'y a pas de filtre ou que le filtre est respecté, on envoie le message
-							synchronized (portForEachSubscriber) {
-								this.logMessage("Broker envoie à Subscriber 1 ");
-								portForEachSubscriber.get(entry.getKey()).acceptMessage(msg);
-								System.out.println("envoyééééééééééééééééééééééééééééééééé");
-							}
-						}else if( entry.getValue().filter(msg)){
-							synchronized (portForEachSubscriber) {
-								this.logMessage("Broker envoie à Subscriber 1 ");
-								portForEachSubscriber.get(entry.getKey()).acceptMessage(msg);
-								System.out.println("envoyééééééééééééééééééééééééééééééééé");
-							}
+							portForEachSubscriber.get(entry.getKey()).acceptMessage(msg);
+							portForEachSubscriberLock.readLock().unlock();
+	
+						}
+						// le filtre est respecté, on envoie le message
+						else if( entry.getValue().filter(msg)){
+							portForEachSubscriberLock.readLock().lock();
+
+							this.logMessage("  ");
+							this.logMessage("Send 1 : Broker envoie un message à Subscriber "+entry.getKey());
+							
+							portForEachSubscriber.get(entry.getKey()).acceptMessage(msg);
+							portForEachSubscriberLock.readLock().unlock();
 						}
 					}
 					msgToSubscribers.remove(msg);
-
-
-
-			} finally {
-				publishMethodsStructureLock.unlock();
-			}
+	
+				} finally {
+					publishMethodsStructureLock.unlock();
+				}
 
 		}
 
@@ -430,24 +438,24 @@ public class Broker extends AbstractComponent
 	public void sendMessagesToSubscriber() throws Exception {
 
 		MessageI[] msgs = null;
-		HashMap<String, MessageFilter> subscribers = new HashMap<>();
+		HashMap<String, MessageFilterI> subscribers = new HashMap<>();
 
 		while (true) {
-			publishMethodsStructure2Lock.lock();
-
+			
+			publishMethodsStructure2Lock.lock();				
 			try {
-				while(msgsToSubscribers.isEmpty()) 
+				while(msgsToSubscribers.isEmpty()) {
 					clock2.await();
-
+				}
 					// On récupère un message et ses subcribers depuis msgToSubscribers
-					for (Map.Entry<MessageI[], HashMap<String, MessageFilter>> entry : msgsToSubscribers.entrySet()) {
+					for (Map.Entry<MessageI[], HashMap<String, MessageFilterI>> entry : msgsToSubscribers.entrySet()) {
 						msgs = entry.getKey();
 						subscribers = entry.getValue();
 						
 						break;
 					}
 
-					for (Map.Entry<String, MessageFilter> entry : subscribers.entrySet()) {
+					for (Entry<String, MessageFilterI> entry : subscribers.entrySet()) {
 						boolean res = true;
 						if (entry.getValue() != null)
 
@@ -460,17 +468,21 @@ public class Broker extends AbstractComponent
 								}
 							}
 						if (res) {
-							synchronized (portForEachSubscriber) {
-								this.logMessage("Broker envoie à Subscriber 2");
-								portForEachSubscriber.get(entry.getKey()).acceptMessage(msgs);
-							}
+							portForEachSubscriberLock.readLock().lock();
+							this.logMessage("  ");
+							this.logMessage("Send 2 : Broker envoie plusieurs messages à Subscriber "+entry.getKey());
+
+							portForEachSubscriber.get(entry.getKey()).acceptMessage(msgs);
+							portForEachSubscriberLock.readLock().unlock();
+
 						}
 					}
 					msgsToSubscribers.remove(msgs);
+				
 			} finally {
 				publishMethodsStructure2Lock.unlock();
 			}
-
+			//}
 		}
 
 	}
@@ -567,7 +579,7 @@ public class Broker extends AbstractComponent
 		this.sub4TopicLock.writeLock().lock();
 
 		try {
-			HashMap<String, MessageFilter> uris = subscribersForEachTopic.get(topic);
+			HashMap<String, MessageFilterI> uris = subscribersForEachTopic.get(topic);
 			if (uris != null)
 				uris.put(inboundPortURI, null);
 			else {
@@ -581,16 +593,18 @@ public class Broker extends AbstractComponent
 			this.sub4TopicLock.writeLock().unlock();
 		}
 
+		portForEachSubscriberLock.writeLock().lock();
+
 		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
 			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
 			receptionBOP.publishPort() ;
 
-			synchronized (portForEachSubscriber) {
-				portForEachSubscriber.put(inboundPortURI, receptionBOP);
-			}
-
+			portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
 		}
+		portForEachSubscriberLock.writeLock().unlock();
+
 		this.logMessage("Broker, connexion établie");
 	}
 
@@ -600,7 +614,7 @@ public class Broker extends AbstractComponent
 
 		try {
 			for (int i = 0; i < topics.length; i++) {
-				HashMap<String, MessageFilter> uris = subscribersForEachTopic.get(topics[i]);
+				HashMap<String, MessageFilterI> uris = subscribersForEachTopic.get(topics[i]);
 				if (uris != null)
 					uris.put(inboundPortURI, null);
 				else {
@@ -615,16 +629,17 @@ public class Broker extends AbstractComponent
 
 		this.logMessage("Broker, un Subscriber a souscrit à plusieurs topics");
 
+		
 		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
 			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
 			receptionBOP.publishPort() ;
 
-			synchronized (portForEachSubscriber) {
-				portForEachSubscriber.put(inboundPortURI, receptionBOP);
-			}
-
+			portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
 		}
+		portForEachSubscriberLock.writeLock().unlock();
+
 	}
 
 	@Override
@@ -632,7 +647,7 @@ public class Broker extends AbstractComponent
 		this.sub4TopicLock.writeLock().lock();
 
 		try {
-			HashMap<String, MessageFilter> uris = subscribersForEachTopic.get(topic);
+			HashMap<String, MessageFilterI> uris = subscribersForEachTopic.get(topic);
 			if (uris != null)
 				uris.put(inboundPortURI, (MessageFilter) filter);
 			else {
@@ -644,17 +659,17 @@ public class Broker extends AbstractComponent
 			this.sub4TopicLock.writeLock().unlock();
 		}
 
+		
 		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
 			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
 			receptionBOP.publishPort() ;
 
-			synchronized (portForEachSubscriber) {
-				portForEachSubscriber.put(inboundPortURI, receptionBOP);
-			}
-
+			portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
-		
 		}
+		portForEachSubscriberLock.writeLock().unlock();
+
 	}
 
 	@Override
@@ -662,28 +677,29 @@ public class Broker extends AbstractComponent
 		this.sub4TopicLock.writeLock().lock();
 
 		try {
-			HashMap<String, MessageFilter> uris = subscribersForEachTopic.get(topic);
+			HashMap<String, MessageFilterI> uris = subscribersForEachTopic.get(topic);
 			if (uris != null)
-				uris.put(inboundPortURI, (MessageFilter) newFilter);
+				uris.put(inboundPortURI, newFilter);
 			else {
 				uris = new HashMap<>();
-				uris.put(inboundPortURI, (MessageFilter) newFilter);
+				uris.put(inboundPortURI, newFilter);
 			}
 			subscribersForEachTopic.put(topic, uris);
 		} finally {
 			this.sub4TopicLock.writeLock().unlock();
 		}
 
+		
 		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
 			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
 			receptionBOP.publishPort() ;
 
-			synchronized (portForEachSubscriber) {
-				portForEachSubscriber.put(inboundPortURI, receptionBOP);
-			}
-
+			portForEachSubscriber.put(inboundPortURI, receptionBOP);
+			
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
 		}
+		portForEachSubscriberLock.writeLock().unlock();
+
 	}
 
 
@@ -693,23 +709,23 @@ public class Broker extends AbstractComponent
 
 		this.sub4TopicLock.writeLock().lock();
 		try {
-			HashMap<String, MessageFilter> uris = subscribersForEachTopic.get(topic);
+			HashMap<String, MessageFilterI> uris = subscribersForEachTopic.get(topic);
 			uris.remove(inboundPortURI);
 			subscribersForEachTopic.put(topic, uris);
 		} finally {
 			this.sub4TopicLock.writeLock().unlock();
 		}
-
+		
 		if(!portForEachSubscriber.containsKey(inboundPortURI)) {
 			ReceptionCIBrokerOutboundPort receptionBOP = new ReceptionCIBrokerOutboundPort(this);
 			receptionBOP.publishPort() ;
-			
-			synchronized (portForEachSubscriber) {
-				portForEachSubscriber.put(inboundPortURI, receptionBOP);
-			}
+
+			portForEachSubscriber.put(inboundPortURI, receptionBOP);
 
 		this.doPortConnection(receptionBOP.getPortURI(), inboundPortURI, ReceptionCIConnector.class.getCanonicalName());
 		}
+		portForEachSubscriberLock.writeLock().unlock();
+
 	}
 
 }

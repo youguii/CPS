@@ -209,6 +209,20 @@ public class SenariosPublisher {
 			}
 		});
 
+		
+		// Publication d'un message avec un topic et sans filtre
+		this.publisher.runTask(new AbstractComponent.AbstractTask() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					((Publisher) this.getTaskOwner()).publishMessage("Nourriture", publisher.generateMsg("mp5Bis", null, "Inde"));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		
 		// Publication d'un message avec filtre
 		this.publisher.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -219,7 +233,7 @@ public class SenariosPublisher {
 					HashMap<String, Object> props = new HashMap<String, Object>();
 					props.put("Europen", false);
 					
-					((Publisher) this.getTaskOwner()).publishMessage("Pays", publisher.generateMsg("mp5", props, "Inde"));
+					((Publisher) this.getTaskOwner()).publishMessage("Pays", publisher.generateMsg("mp5", null, "Inde"));
 				
 				} catch (Exception e) {
 					throw new RuntimeException(e);
@@ -227,7 +241,7 @@ public class SenariosPublisher {
 			}
 		});
 
-		// Publication d'un message avec plusieurs topics
+		//Publication d'un message avec plusieurs topics
 		String[] topics = { "Danses", "Pays" };
 		this.publisher.runTask(new AbstractComponent.AbstractTask() {
 			@Override
@@ -259,7 +273,7 @@ public class SenariosPublisher {
 				try {
 					for (int counter = 100; counter < 104; counter++) {
 						Thread.sleep(500);
-						((Publisher) this.getTaskOwner()).publishMessage("Salutations",
+						((Publisher) this.getTaskOwner()).publishMessage("Pays",
 								publisher.generateMsg("mp" + counter, null, "Salut" + counter));
 					}
 				} catch (Exception e) {

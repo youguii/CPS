@@ -121,18 +121,21 @@ public class Publisher extends AbstractComponent {
 			assert this.publicationPOP.connected();
 			assert this.publicationPOP.getConnector().connected();
 
+			
+			
 			// Tests d'intégration / Différents Senarios du Publier
-			switch (this.publisherUri) {
-			case "0":
+			switch (Integer.parseInt(this.publisherUri)%3) {
+			
+			case 0:
 				sp.senario_Four(20, Integer.parseInt(this.publisherUri));
 				//sp.senario_One();
 				break;
-			case "1":
+			case 1:
 				sp.senario_Four(20, Integer.parseInt(this.publisherUri));
 				//sp.senario_Two();
 
 				break;
-			case "2":
+			case 2:
 				sp.senario_Four(20, Integer.parseInt(this.publisherUri));
 				//sp.senario_Three();
 

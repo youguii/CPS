@@ -30,6 +30,7 @@ import versionMultiJvm.broker_repartition.connectors.DistributionConnector;
 import versionMultiJvm.broker_repartition.interfaces.DistributionCI;
 import versionMultiJvm.broker_repartition.ports.DistributionInboundPort;
 import versionMultiJvm.broker_repartition.ports.DistributionOutboundPort;
+import versionMultiJvm.broker_repartition.testsPerformance.TestsPerform;
 
 public class Broker extends AbstractComponent
 		implements ManagementImplementationI, SubscriptionImplementationI, PublicationsImplementationI,
@@ -76,6 +77,12 @@ public class Broker extends AbstractComponent
 	protected String distributionBIPURI;
 	
 	protected ArrayList<DistributionOutboundPort> brokerDistribOP;
+	
+	
+	//Tests de performances 	
+	protected TestsPerform tp;
+	public static boolean fini;
+	
 	
 	/**
 	 *
@@ -150,6 +157,14 @@ public class Broker extends AbstractComponent
 		this.tracer.setTitle("Broker");
 		this.tracer.setRelativePosition(1, 0);
 		this.toggleTracing();
+		
+		
+		
+		//Tests de performance
+		tp = new TestsPerform();
+
+		fini = false;
+
 
 	}
 
@@ -164,18 +179,22 @@ public class Broker extends AbstractComponent
 
 		try {
 			// Connexion avec les autres brokers
-			for(int i=0; i < brokers_inbound_port_uris.length-1;i++) {
-				if(!brokers_inbound_port_uris[i].equals(distributionBIPURI)) {
+			for(int i=0; i < brokers_inbound_port_uris.length ;i++) {
+				if(!(brokers_inbound_port_uris[i].equals(distributionBIPURI))) {
 					brokerDistribOP.add(new DistributionOutboundPort(this)) ;
-					brokerDistribOP.get(i).publishPort();
-					
-					this.doPortConnection(
-							(brokerDistribOP.get(i)).getPortURI(),
-							brokers_inbound_port_uris[i],
-							DistributionConnector.class.getCanonicalName()) ;
-					}
+				}
 			}
-			
+			for(int i=0; i < brokerDistribOP.size();i++) {
+
+				brokerDistribOP.get(i).publishPort();
+				
+				this.doPortConnection(
+						(brokerDistribOP.get(i)).getPortURI(),
+						brokers_inbound_port_uris[i],
+						DistributionConnector.class.getCanonicalName()) ;
+			}
+
+					
 			for(int i = 0; i < 3 ; i++) {
 				this.runTask(new AbstractComponent.AbstractTask() {
 					@Override
@@ -201,6 +220,18 @@ public class Broker extends AbstractComponent
 					}
 				});
 			}
+			
+			
+			//Tests de performances
+			new Thread(){
+				@Override
+				public void run(){
+					tp.nbMessages_en_Attente(msgToSubscribers , publishMethodsStructureLock);
+				}
+				
+			}.start();
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -230,11 +261,12 @@ public class Broker extends AbstractComponent
 
 	@Override
 	public void shutdown() throws ComponentShutdownException {
-		publishMethodsStructureLock.lock();
-
-		System.out.println("taille de map des messages >> "+msgToSubscribers.size()); 
-		publishMethodsStructureLock.unlock();
-	
+		
+		//Tests de performances
+		fini = true;
+		tp.calcul_Average_nbMessage(msgToSubscribers , publishMethodsStructureLock);
+		
+		
 		try {
 			// Dépublication des ports
 			this.managementBIP.unpublishPort();
@@ -259,6 +291,10 @@ public class Broker extends AbstractComponent
 		super.shutdown();
 	}
 
+		
+		
+
+	
 	// -------------------------------------------------------------------------
 	// Component usefullMethodes
 	// -------------------------------------------------------------------------

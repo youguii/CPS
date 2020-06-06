@@ -1,4 +1,4 @@
-//CPSDistrib/src/versionMultiJvm/versionStaticMJvm/jars/CPSDistrib.jar
+//CPSDistrib/src/versionMultiJvm/broker_repartition/testsPerformance/jars/CPSDistrib.jar
 
 
 package versionMultiJvm.broker_repartition;
@@ -23,11 +23,13 @@ extends		AbstractDistributedCVM
 
     protected static final String managementBIPURI1 = "managementBIPURI1";
     protected static final String managementBIPURI2 = "managementBIPURI2";
-        
+    protected static final String managementBIPURI3 = "managementBIPURI3";
+
     public static final String[] BROKER_INBOUND_PORT_URIS =
 			new String[]{
 				"brokerC_IP_URI1",
-				"brokerC_IP_URI2"
+				"brokerC_IP_URI2",
+				"brokerC_IP_URI3"
 	} ;
 
     
@@ -43,25 +45,22 @@ extends		AbstractDistributedCVM
 	@Override
 	public void			instantiateAndPublish() throws Exception
 	{
-		System.out.println(thisJVMURI);
+//		System.out.println(thisJVMURI);
+
 		if (thisJVMURI.equals(JVM1_URI)) {
 			
-			
-//			AbstractComponent.createComponent(
-//	                Broker.class.getCanonicalName(),
-//	                new Object[] { managementBIPURI1, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[0]});
-//
-//			AbstractComponent.createComponent(
-//					Subscriber.class.getCanonicalName(),
-//					new Object[] {managementBIPURI1, Integer.toString(2)});
-//
-//			AbstractComponent.createComponent(
-//	                Broker.class.getCanonicalName(),
-//	                new Object[] { managementBIPURI2, MANAGER_INBOUND_PORT_URI, BROKER_INBOUND_PORT_URIS[1]});
-//
-//			AbstractComponent.createComponent(
-//					Publisher.class.getCanonicalName(),
-//					new Object[] {managementBIPURI2, Integer.toString(2) });
+
+			AbstractComponent.createComponent(
+					Subscriber.class.getCanonicalName(),
+					new Object[] {managementBIPURI1, Integer.toString(2)});
+
+			AbstractComponent.createComponent(
+	                Broker.class.getCanonicalName(),
+	                new Object[] { managementBIPURI1, BROKER_INBOUND_PORT_URIS, BROKER_INBOUND_PORT_URIS[0]});
+
+			AbstractComponent.createComponent(
+					Publisher.class.getCanonicalName(),
+					new Object[] {managementBIPURI1, Integer.toString(2) });
 
 
 		} else if (thisJVMURI.equals(JVM2_URI)) {
@@ -69,9 +68,9 @@ extends		AbstractDistributedCVM
 			AbstractComponent.createComponent(
 	                Broker.class.getCanonicalName(),
 	                new Object[] { 
-	                		managementBIPURI1, 
+	                		managementBIPURI2, 
 	                		BROKER_INBOUND_PORT_URIS, 
-	                		BROKER_INBOUND_PORT_URIS[0]});
+	                		BROKER_INBOUND_PORT_URIS[1]});
 	    	
 		
 //			AbstractComponent.createComponent(
@@ -82,8 +81,9 @@ extends		AbstractDistributedCVM
 			AbstractComponent.createComponent(
 					Subscriber.class.getCanonicalName(),
 					new Object[] {
-							managementBIPURI1, 
+							managementBIPURI2, 
 							Integer.toString(2)});
+
 
 
 		} else if (thisJVMURI.equals(JVM3_URI)) {
@@ -92,16 +92,16 @@ extends		AbstractDistributedCVM
 			AbstractComponent.createComponent(
 	                Broker.class.getCanonicalName(),
 	                new Object[] { 
-	                		managementBIPURI2, 
+	                		managementBIPURI3, 
 	                		BROKER_INBOUND_PORT_URIS, 
-	                		BROKER_INBOUND_PORT_URIS[1]});
+	                		BROKER_INBOUND_PORT_URIS[2]});
 	    	
 		
 		
 			AbstractComponent.createComponent(
 					Publisher.class.getCanonicalName(),
 					new Object[] {
-							managementBIPURI2, 
+							managementBIPURI3, 
 							Integer.toString(2) });
 //	    	
 //

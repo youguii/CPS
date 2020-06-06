@@ -10,7 +10,7 @@ import components.Publisher;
 import components.Subscriber;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
-import fr.sorbonne_u.components.helpers.CVMDebugModes;
+import utiles.Configuration;
 
 public class CVM 
 extends AbstractCVM {
@@ -19,16 +19,21 @@ extends AbstractCVM {
     protected static final String managementBIPURI = "managementBIPURI";
     protected int nbPublisher;
     
+ 
+    
     public CVM(int nbPublisher) throws Exception {
         super();
         
         this.nbPublisher = nbPublisher;
         
+        
+        
+        
         BufferedWriter bOut= null ;
 		try{
-            File inputFile = new File("/home/kiska/git/CPS/src/testsPerformance/test.txt");
+            File inputFile = new File(Configuration.path_t);
             bOut = new BufferedWriter(new FileWriter(inputFile, true)) ;
-            bOut.write("Calcul du temps d'acheminement d'un message pour un nombre de publishers = "+nbPublisher+"\n");
+            bOut.write("Calcul du temps d'acheminement d'un message pour un nombre de publishers = "+nbPublisher+", CVM \n");
 
 		}catch(IOException e) {
             System.out.println(e) ;
@@ -41,7 +46,8 @@ extends AbstractCVM {
 		            System.out.println(ec) ;
 		        }
         }
-        
+     
+		
     }
     
     @Override
@@ -73,7 +79,7 @@ extends AbstractCVM {
 	
 		for(int i= 0; i < nbPublisher; i++) {
 		
-			String uriPublisher = AbstractComponent.createComponent(
+			AbstractComponent.createComponent(
 	        Publisher.class.getCanonicalName(),
 	        new Object[] {managementBIPURI, Integer.toString(i) });
 	    	
@@ -82,7 +88,7 @@ extends AbstractCVM {
 
 		for(int i= 0; i < 3 ; i++) {
 			
-			String uriSubscriber = AbstractComponent.createComponent(
+			AbstractComponent.createComponent(
 	        Subscriber.class.getCanonicalName(),
 	        new Object[] {managementBIPURI, Integer.toString(i)});
 	        
@@ -103,15 +109,15 @@ extends AbstractCVM {
 
             try {
                 
-            	for(int nbCVM = 1 ; nbCVM <= 10 ; nbCVM++) {
+            	for(int nbCVM = 1 ; nbCVM <= Configuration.nbExecutions; nbCVM++) {
 
                      System.out.println("Commencement cvm simple");
                      // Create an instance of the defined component virtual machine.
-                     CVM a = new CVM(nbCVM*30) ;
+                     CVM a = new CVM(nbCVM*Configuration.nb_publishers_CVM) ;
                      // Execute the application.
                      a.startStandardLifeCycle(10000L) ;
                      // Give some time to see the traces (convenience).
-                     Thread.sleep(10000L) ;
+                     Thread.sleep(1000L) ;
                      // Simplifies the termination (termination has yet to be treated
                      // properly in BCM).
             	}
@@ -127,5 +133,4 @@ extends AbstractCVM {
     }
 
 }
-
 

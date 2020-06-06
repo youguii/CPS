@@ -1,14 +1,5 @@
 package components;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-
 import connectors.ManagementCIConnector;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
@@ -22,6 +13,7 @@ import interfaces.ReceptionImplementationI;
 import ports.ManagementCISubscriberOutboundPort;
 import ports.ReceptionCISubscriberInboundPort;
 import testsIntegration.SenariosSubscriber;
+import versionMultiJvm.broker_repartition.testsPerformance.TestsPerform;
 
 public class Subscriber 
 extends AbstractComponent 
@@ -46,9 +38,10 @@ implements ReceptionImplementationI {
 	/**Tests d'integrations*/
 	protected SenariosSubscriber ss;
 	
-	protected BufferedWriter bOut;
 	
-	protected ArrayList<Long> times ; 
+	
+	protected TestsPerform tp;
+
 	/**
 	 *
 	 * @param managementBIPURI Uri du port entrant du service management
@@ -57,7 +50,7 @@ implements ReceptionImplementationI {
 	 */
 	protected Subscriber(String managementBIPURI, String uri)
 
-			throws Exception {
+		throws Exception {
 
 		super(20, 0);
 
@@ -87,25 +80,9 @@ implements ReceptionImplementationI {
 		//initialisation de tests senarios
 		this.ss = new SenariosSubscriber(this);
 		
-		this.times = new ArrayList<>();  
 
-		bOut= null ;
-		try{
-            File inputFile = new File("/home/kiska/git/CPS/src/testsPerformance/test.txt");
-            bOut = new BufferedWriter(new FileWriter(inputFile, true)) ;
-
-		}catch(IOException e) {
-            System.out.println(e) ;
-        }
-//            finally{
-//            if (bOut != null)
-//                try {
-//                    bOut.close();
-//                }catch(IOException ec) {
-//                    System.out.println(ec) ;
-//                }
-//        }
-
+		this.tp = new TestsPerform();
+	
 	}
 
 	// ------------------------------------------------------------------------
@@ -139,19 +116,19 @@ implements ReceptionImplementationI {
 			switch (this.subscriberUri) {
 			case "0":
 				this.ss.senario_Four(20);
-				//this.ss.senario_One();
+//				this.ss.senario_One();
 				break;
 			case "1":
 				this.ss.senario_Four(20);
-				//this.ss.senario_Two();
+//				this.ss.senario_Two();
 				break;
 			case "2":	
 				this.ss.senario_Four(20);
-				//this.ss.senario_Three();
+//				this.ss.senario_Three();
 				break;
 			default:
 				this.ss.senario_Four(20);
-				//this.ss.senario_One();
+//				this.ss.senario_One();
 			}
 
 		} catch (Exception e) {
@@ -176,22 +153,8 @@ implements ReceptionImplementationI {
 
 	@Override
 	public void shutdown() throws ComponentShutdownException {
-		System.out.println("---------------affichage des timestamp--------------");
-		long totalTime=0;
-		for(Long g : times) {
-			totalTime += g;
-			//System.out.println(g);
-		}
-		System.out.println("Average time = "+totalTime/(long)times.size());
 
-		if (bOut != null)
-            try {
-                bOut.write(String.valueOf(totalTime/(long)times.size())+"\n");
-
-                bOut.close();
-            }catch(IOException ec) {
-                System.out.println(ec) ;
-            }
+		tp.writeTimes();
 		
 		try {
 			this.managementSubscriberOP.unpublishPort();
@@ -218,10 +181,7 @@ implements ReceptionImplementationI {
 	@Override
 	public void acceptMessage(MessageI m) throws Exception {
 		//calculs du temps d'acheminement d'un message
-		long t = new Timestamp(System.currentTimeMillis()).getTime();
-		this.times.add( t - m.getTimeStamp().getTime());
-		
-        //bOut.write(String.valueOf(t - m.getTimeStamp().getTime())+"\n");
+		tp.calculTimes(m);
 
 		this.logMessage("Subscriber a reçu " + m.getURI());
 		this.message = m;
@@ -240,10 +200,7 @@ implements ReceptionImplementationI {
 	public void acceptMessage(MessageI[] ms) throws Exception {
 		//calculs du temps d'acheminement d'un message
 		for(int i = 0 ; i< ms.length; i++) {
-			long t = new Timestamp(System.currentTimeMillis()).getTime();
-			this.times.add( t - ms[i].getTimeStamp().getTime());
-	        //bOut.write(String.valueOf(t - ms[i].getTimeStamp().getTime())+"\n");
-
+			tp.calculTimes(ms[i]);
 		}		
 		this.logMessage("Subscriber a reçu des messages dont " + ms[0].getURI());
 	}

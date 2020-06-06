@@ -2,7 +2,6 @@ package testsIntegration;
 
 import components.Subscriber;
 import fr.sorbonne_u.components.AbstractComponent;
-import interfaces.MessageFilterI;
 import interfaces.MessageI;
 import utiles.MessageFilter;
 
@@ -210,8 +209,8 @@ public class SenariosSubscriber {
 
 	public void senario_Four(int i) throws Exception {
 		//tableau de topics 
-		String[] topics = {"Sport", "Peche", "Voyage", "Musique", "Art" /*, "Theatre", "Cinema", "Histoire", "Science", "Divertissement", 
-				"Literature", "Medecine", "Mathematique", "Informatique", "Algorithmique", "Composant", "Electronique", "Commerce", "Hight-Tech", "People"*/};
+		String[] topics = {"Sport", "Peche", "Voyage", "Musique", "Art" , "Theatre", "Cinema", "Histoire", "Science", "Divertissement", 
+				"Literature", "Medecine", "Mathematique", "Informatique", "Algorithmique", "Composant", "Electronique", "Commerce", "Hight-Tech", "People"};
 		
 		
 		//int r = Double.valueOf(Math.random()*19).intValue();

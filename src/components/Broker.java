@@ -1,5 +1,7 @@
 package components;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,6 +64,12 @@ public class Broker extends AbstractComponent
 	/** Uri du port entrant du service reception */
 	protected String receptionSIPURI;
 
+	
+	//Tests de performances 
+	protected boolean fini ;
+	protected ArrayList<Integer> nbMessages_t;
+	
+	
 	/**
 	 *
 	 * @param managementBIPURI Uri du port entrant du service management
@@ -116,7 +124,11 @@ public class Broker extends AbstractComponent
 		this.tracer.setTitle("Broker");
 		this.tracer.setRelativePosition(1, 0);
 		this.toggleTracing();
-
+		
+		
+		//Tests de performance
+		fini = false;
+		nbMessages_t = new ArrayList<Integer>();
 	}
 
 //-------------------------------------------------------------------------
@@ -154,12 +166,22 @@ public class Broker extends AbstractComponent
 					}
 				});
 			}
+			
+			new Thread(){
+				@Override
+				public void run(){
+					nbMessages_en_Attente();
+				}
+				
+			}.start();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
+	
 	@Override
 	public void finalise() throws Exception {
 
@@ -179,11 +201,23 @@ public class Broker extends AbstractComponent
 
 	@Override
 	public void shutdown() throws ComponentShutdownException {
+		//Tests de performances 
 		publishMethodsStructureLock.lock();
-
 			System.out.println("taille de map des messages >> "+msgToSubscribers.size()); 
 		publishMethodsStructureLock.unlock();
+		fini = false;
+		
+		System.out.println("---------------affichage des nbMessages --------------");
+		long totalnbMessage=0;
+		synchronized(nbMessages_t) {
+			for(int t : nbMessages_t) {
+				totalnbMessage += t;
+			}
+		}
+		System.out.println("Average nbMessages = "+totalnbMessage/(int)nbMessages_t.size());
 
+
+		
 		try {
 			// Dépublication des ports
 			this.managementBIP.unpublishPort();
@@ -202,6 +236,28 @@ public class Broker extends AbstractComponent
 		super.shutdown();
 	}
 
+	
+	public void nbMessages_en_Attente() {
+		while( true ) {
+			if(!fini) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				publishMethodsStructureLock.lock();
+					//System.out.println("taille de map des messages >> "+msgToSubscribers.size()); 
+					nbMessages_t.add(msgToSubscribers.size());
+				publishMethodsStructureLock.unlock();
+			}else {
+				break;
+			}
+		}
+		
+		
+		
+	}
+	
 	// -------------------------------------------------------------------------
 	// Component usefullMethodes
 	// -------------------------------------------------------------------------
@@ -219,7 +275,7 @@ public class Broker extends AbstractComponent
 		 */
 		sub4TopicLock.readLock().lock();
 		try {
-
+			
 			if (subscribersForEachTopic.containsKey(topic))
 				map.putAll(subscribersForEachTopic.get(topic));
 			else {
@@ -241,7 +297,6 @@ public class Broker extends AbstractComponent
 				publishMethodsStructureLock.unlock();
 			}
 		}
-
 
 	}
 

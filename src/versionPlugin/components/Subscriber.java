@@ -171,6 +171,20 @@ implements ReceptionImplementationI{
 	 * @throws Exception
 	 */
 	public void senario_Two() throws Exception {
+		
+		// Souscrire au topic Danses
+				this.runTask(new AbstractComponent.AbstractTask() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(1000);
+							((Subscriber) this.getTaskOwner()).subscribeToTopic("Saisons");
+						} catch (Exception e) {
+							throw new RuntimeException(e);
+						}
+					}
+				});
+
 		// Souscription à un topic
 		this.runTask(new AbstractComponent.AbstractTask() {
 			@Override

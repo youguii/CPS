@@ -81,8 +81,9 @@ public class Broker extends AbstractComponent
 	
 	//Tests de performances 	
 	protected TestsPerform tp;
+	protected String brokerUri;
 	public static boolean fini;
-	
+	protected boolean modeTest;
 	
 	/**
 	 *
@@ -92,7 +93,9 @@ public class Broker extends AbstractComponent
 	protected Broker(
 			String managementBIPURI,
 			String [] brokers_inbound_port_uris,
-			String distributionBIPURI
+			String distributionBIPURI,
+			String brokerUri,
+			boolean modeTest
 			
 	) throws Exception {
 		super(10, 0);
@@ -161,10 +164,13 @@ public class Broker extends AbstractComponent
 		
 		
 		//Tests de performance
-		tp = new TestsPerform();
-
-		fini = false;
-
+		this.modeTest= modeTest;
+		if(this.modeTest){
+			tp = new TestsPerform();
+			this.brokerUri = brokerUri;
+			fini = false;
+		}
+	
 
 	}
 
@@ -223,13 +229,15 @@ public class Broker extends AbstractComponent
 			
 			
 			//Tests de performances
-			new Thread(){
-				@Override
-				public void run(){
-					tp.nbMessages_en_Attente(msgToSubscribers , publishMethodsStructureLock);
-				}
-				
-			}.start();
+			if(this.modeTest){
+				new Thread(){
+					@Override
+					public void run(){
+						tp.nbMessages_en_Attente(msgToSubscribers , publishMethodsStructureLock);
+					}
+					
+				}.start();
+			}
 			
 			
 		} catch (Exception e) {
@@ -263,9 +271,10 @@ public class Broker extends AbstractComponent
 	public void shutdown() throws ComponentShutdownException {
 		
 		//Tests de performances
-		fini = true;
-		tp.calcul_Average_nbMessage(msgToSubscribers , publishMethodsStructureLock);
-		
+		if(this.modeTest){
+			fini = true;
+			tp.calcul_Average_nbMessage(msgToSubscribers , publishMethodsStructureLock, this.brokerUri);
+		}
 		
 		try {
 			// Dépublication des ports

@@ -13,7 +13,6 @@ import components.Publisher;
 import components.Subscriber;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractDistributedCVM;
-import utiles.Configuration;
 import versionMultiJvm.broker_repartition.components.Broker;
 
 
@@ -54,21 +53,27 @@ extends		AbstractDistributedCVM
 
 
 
-
 	@Override
 	public void			instantiateAndPublish() throws Exception
 	{
 		System.out.println(thisJVMURI);
 		if (thisJVMURI.equals(JVM1_URI)) {
-
+		
+			writeInFile();
+			
 			AbstractComponent.createComponent(
 	                Broker.class.getCanonicalName(),
-	                new Object[] { managementBIPURI1,BROKER_INBOUND_PORT_URIS , BROKER_INBOUND_PORT_URIS[0]});
+	                new Object[] { 
+	                		managementBIPURI1, 
+	                		BROKER_INBOUND_PORT_URIS , 
+	                		BROKER_INBOUND_PORT_URIS[0], 
+	                		"B_JVM1",
+	                		true});
 
 
 			AbstractComponent.createComponent(
 					Subscriber.class.getCanonicalName(),
-					new Object[] {managementBIPURI1, Integer.toString(0)});
+					new Object[] {managementBIPURI1, Integer.toString(0), true});
 
 			for(int i= 0; i < Configuration.nb_publishers_DCVM; i++) {
 				AbstractComponent.createComponent(
@@ -78,13 +83,15 @@ extends		AbstractDistributedCVM
 
 
 		} else if (thisJVMURI.equals(JVM2_URI)) {
-
+			
 			AbstractComponent.createComponent(
 	                Broker.class.getCanonicalName(),
 	                new Object[] { 
 	                		managementBIPURI2, 
 	                		BROKER_INBOUND_PORT_URIS, 
-	                		BROKER_INBOUND_PORT_URIS[1]});
+	                		BROKER_INBOUND_PORT_URIS[1],
+	                		"B_JVM2",
+	                		true});
 	    	
 			for(int i= 0; i < Configuration.nb_publishers_DCVM ; i++) {
 
@@ -95,34 +102,31 @@ extends		AbstractDistributedCVM
 			
 			AbstractComponent.createComponent(
 					Subscriber.class.getCanonicalName(),
-					new Object[] {
-							managementBIPURI2, 
-							Integer.toString(1)});
+					new Object[] {managementBIPURI2, Integer.toString(1), true});
 
 
 		} else if (thisJVMURI.equals(JVM3_URI)) {
-			
-			
+						
 			AbstractComponent.createComponent(
 	                Broker.class.getCanonicalName(),
 	                new Object[] { 
 	                		managementBIPURI3, 
 	                		BROKER_INBOUND_PORT_URIS, 
-	                		BROKER_INBOUND_PORT_URIS[2]});
+	                		BROKER_INBOUND_PORT_URIS[2],
+	                		"B_JVM3",
+	                		true});
 	    	
 		
 			for(int i= 0; i < Configuration.nb_publishers_DCVM; i++) {
 
 				AbstractComponent.createComponent(
 						Publisher.class.getCanonicalName(),
-						new Object[] {
-								managementBIPURI3, 
-								Integer.toString(i+3000) });
+						new Object[] {managementBIPURI3, Integer.toString(i+3000) });
 			}
 
 			AbstractComponent.createComponent(
 					Subscriber.class.getCanonicalName(),
-					new Object[] {managementBIPURI3, Integer.toString(2)});
+					new Object[] {managementBIPURI3, Integer.toString(2), true});
 			
 		
 		
@@ -134,6 +138,45 @@ extends		AbstractDistributedCVM
 
 		super.instantiateAndPublish();
 	}
+	
+	
+	public void writeInFile() {
+		if (!done) {
+			done = true;
+			BufferedWriter bOut= null ;
+			BufferedWriter bOut2= null ;
+
+			try{
+	            File inputFile = new File(Configuration.path_t);
+	            File inputFile2 = new File(Configuration.path_m);
+
+	            bOut = new BufferedWriter(new FileWriter(inputFile, true)) ;
+	            bOut2 = new BufferedWriter(new FileWriter(inputFile2, true)) ;
+
+	            bOut.write("\nDCVM : Calcul du temps d'acheminement d'un message reçu par chaque subscriber et pour un nombre de publishers = "+Configuration.nb_publishers_DCVM * 3+" \n");
+	            bOut2.write("\nDCVM : Calcul du nombre moyen de messages en attente de livraison pour chaque JVM avec un nombre total de publishers = "+Configuration.nb_publishers_DCVM * 3+" \n");
+
+			}catch(IOException e) {
+	            System.out.println(e) ;
+	        }
+		    finally{
+		    	
+			    if (bOut != null)
+			        try {
+			            bOut.close();
+			        }catch(IOException ec) {
+			            System.out.println(ec) ;
+			        }
+			    if (bOut2 != null)
+			        try {
+			            bOut2.close();
+			        }catch(IOException ec) {
+			            System.out.println(ec) ;
+			        }
+	        }
+
+		}
+	}
 
 	
 	
@@ -141,28 +184,7 @@ extends		AbstractDistributedCVM
 	public static void	main(String[] args)
 	{
 		try {
-			if (!done) {
-				done = true;
-				BufferedWriter bOut= null ;
-				try{
-		            File inputFile = new File(Configuration.path_t);
-		            bOut = new BufferedWriter(new FileWriter(inputFile, true)) ;
-		            bOut.write("Calcul du temps d'acheminement d'un message pour un nombre de publishers = "+Configuration.nb_publishers_DCVM * 3+", DCVM\n");
-	
-				}catch(IOException e) {
-		            System.out.println(e) ;
-		        }
-			    finally{
-			    	
-				    if (bOut != null)
-				        try {
-				            bOut.close();
-				        }catch(IOException ec) {
-				            System.out.println(ec) ;
-				        }
-		        }
 
-			}
 				DistributedCVM da  = new DistributedCVM(args, 2, 5) ;
 				da.startStandardLifeCycle(10000L) ;
 				Thread.sleep(2000L) ;

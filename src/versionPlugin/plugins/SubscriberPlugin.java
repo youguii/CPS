@@ -129,7 +129,6 @@ implements	ReceptionImplementationI{
 	
 	@Override
 	public void acceptMessage(MessageI m) throws Exception {
-		System.out.println("recu "+m.getURI());
 		this.getOwner().acceptMessage(m);
 	}
 

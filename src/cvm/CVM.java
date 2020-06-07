@@ -5,7 +5,6 @@ import components.Publisher;
 import components.Subscriber;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
-import fr.sorbonne_u.components.helpers.CVMDebugModes;
 
 public class CVM 
 extends AbstractCVM {
@@ -49,7 +48,7 @@ extends AbstractCVM {
 	
 		for(int i= 0; i < 3; i++) {
 		
-			String uriPublisher = AbstractComponent.createComponent(
+			AbstractComponent.createComponent(
 	        Publisher.class.getCanonicalName(),
 	        new Object[] {managementBIPURI, Integer.toString(i) });
 	    	
@@ -58,12 +57,10 @@ extends AbstractCVM {
 
 		for(int i= 0; i < 3 ; i++) {
 			
-			String uriSubscriber = AbstractComponent.createComponent(
+			AbstractComponent.createComponent(
 	        Subscriber.class.getCanonicalName(),
-	        new Object[] {managementBIPURI, Integer.toString(i)});
+	        new Object[] {managementBIPURI, Integer.toString(i), false});
 	        
-			
-
 		}
 
         super.deploy();

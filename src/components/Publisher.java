@@ -70,9 +70,9 @@ public class Publisher extends AbstractComponent {
 		this.publicationPOP.publishPort();
 
 		// Affichage de la console
-//		this.tracer.setTitle("publisher" + uri);
-//		this.tracer.setRelativePosition(Integer.parseInt(uri), 1);
-//		this.toggleTracing();
+		this.tracer.setTitle("publisher" + uri);
+		this.tracer.setRelativePosition(Integer.parseInt(uri), 1);
+		this.toggleTracing();
 
 		
 		//initialisation de tests senarios

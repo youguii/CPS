@@ -39,8 +39,9 @@ implements ReceptionImplementationI {
 	protected SenariosSubscriber ss;
 	
 	
-	
+	/**Tests de performance*/	
 	protected TestsPerform tp;
+	protected boolean modeTest;
 
 	/**
 	 *
@@ -48,7 +49,7 @@ implements ReceptionImplementationI {
 	 * @param uri              uri pour distinguer entre les publiers
 	 * @throws Exception
 	 */
-	protected Subscriber(String managementBIPURI, String uri)
+	protected Subscriber(String managementBIPURI, String uri, boolean modeTest)
 
 		throws Exception {
 
@@ -80,8 +81,10 @@ implements ReceptionImplementationI {
 		//initialisation de tests senarios
 		this.ss = new SenariosSubscriber(this);
 		
-
-		this.tp = new TestsPerform();
+		//tests de performance
+		this.modeTest = modeTest;
+		if(modeTest)
+			this.tp = new TestsPerform();
 	
 	}
 
@@ -154,7 +157,8 @@ implements ReceptionImplementationI {
 	@Override
 	public void shutdown() throws ComponentShutdownException {
 
-		tp.writeTimes();
+		if(modeTest)
+			tp.writeTimes(this.subscriberUri);
 		
 		try {
 			this.managementSubscriberOP.unpublishPort();
@@ -181,7 +185,8 @@ implements ReceptionImplementationI {
 	@Override
 	public void acceptMessage(MessageI m) throws Exception {
 		//calculs du temps d'acheminement d'un message
-		tp.calculTimes(m);
+		if(modeTest)
+			tp.calculTimes(m);
 
 		this.logMessage("Subscriber a reçu " + m.getURI());
 		this.message = m;
@@ -199,9 +204,11 @@ implements ReceptionImplementationI {
 	@Override
 	public void acceptMessage(MessageI[] ms) throws Exception {
 		//calculs du temps d'acheminement d'un message
-		for(int i = 0 ; i< ms.length; i++) {
-			tp.calculTimes(ms[i]);
-		}		
+		if(modeTest)
+			for(int i = 0 ; i< ms.length; i++) {
+				tp.calculTimes(ms[i]);
+			}		
+		
 		this.logMessage("Subscriber a reçu des messages dont " + ms[0].getURI());
 	}
 

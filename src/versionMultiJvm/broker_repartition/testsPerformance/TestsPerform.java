@@ -11,7 +11,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import interfaces.MessageFilterI;
 import interfaces.MessageI;
-import utiles.Configuration;
 import versionMultiJvm.broker_repartition.components.Broker;
 
 public class TestsPerform {
@@ -60,19 +59,18 @@ public class TestsPerform {
 		}
 	}
 
-	public void writeTimes() {
+	public void writeTimes(String subscriberUri) {
 
 		System.out.println("---------------affichage des timestamp--------------");
 		long totalTime = 0;
 		for (Long g : times) {
 			totalTime += g;
-			// System.out.println(g);
 		}
 		System.out.println("Average time = " + totalTime / (long) times.size());
 
 		if (bOut != null)
 			try {
-				bOut.write(String.valueOf(totalTime / (long) times.size()) + "\n");
+				bOut.write("Subscriber "+subscriberUri+" : "+String.valueOf(totalTime / (long) times.size()) + "\n");
 
 				bOut.close();
 			} catch (IOException ec) {
@@ -82,15 +80,15 @@ public class TestsPerform {
 	}
 
 	public void calcul_Average_nbMessage(HashMap<MessageI, HashMap<String, MessageFilterI>> msgToSubscribers,
-			ReentrantLock publishMethodsStructureLock) {
+			ReentrantLock publishMethodsStructureLock, String brokerUri) {
 
 		
 		try {
 
 			// Tests de performances
-			publishMethodsStructureLock.lock();
-			System.out.println("taille de map des messages >> " + msgToSubscribers.size());
-			publishMethodsStructureLock.unlock();
+//			publishMethodsStructureLock.lock();
+//			System.out.println("taille de map des messages >> " + msgToSubscribers.size());
+//			publishMethodsStructureLock.unlock();
 
 			System.out.println("---------------affichage des nbMessages --------------");
 			long totalnbMessage = 0;
@@ -98,8 +96,8 @@ public class TestsPerform {
 				totalnbMessage += t;
 			}
 			if (bOut2 != null) {
-				System.out.println("Average nbMessages = " +String.valueOf(totalnbMessage / (double) nbMessages_t.size()));
-				bOut2.write("Average nbMessages = " + String.valueOf(totalnbMessage / (double) nbMessages_t.size())+ "\n");
+				System.out.println("Broker "+brokerUri+" : Average nbMessages = " +String.valueOf(totalnbMessage / (double) nbMessages_t.size()));
+				bOut2.write("Broker "+brokerUri+" : Average nbMessages = " + String.valueOf(totalnbMessage / (double) nbMessages_t.size())+ "\n");
 				bOut2.close();
 			}
 		} catch (IOException e) {
@@ -119,7 +117,7 @@ public class TestsPerform {
 				}
 				publishMethodsStructureLock.lock();
 					nbMessages_t.add(msgToSubscribers.size());
-					System.out.println("taille de msgtosubscribers >>>>>>>"+msgToSubscribers.size());
+//					System.out.println("taille de msgtosubscribers >>>>>>>"+msgToSubscribers.size());
 				publishMethodsStructureLock.unlock();
 			} else {
 				break;

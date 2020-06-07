@@ -10,7 +10,6 @@ import dynamique.cvm.CVM;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
-import fr.sorbonne_u.components.cvm.ComponentVirtualMachineI;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.pre.dcc.connectors.DynamicComponentCreationConnector;
@@ -71,14 +70,12 @@ extends AbstractComponent{
 						Broker.class.getCanonicalName(),
 						new Object[] {CVM.managementBIPURI}) ;
 		this.deployerURIs.add(brokerURI) ;
-		System.out.println("creation broker");
 		
 		for(int i= 0; i < 3; i++) {
 			String publisherURI =
 					this.dccOutPort.createComponent(
 							Publisher.class.getCanonicalName(),
 							new Object[] {CVM.managementBIPURI, Integer.toString(i)}) ;
-			System.out.println("creation publiser"+i);
 	
 			this.deployerURIs.add(publisherURI) ;
 		}
@@ -87,9 +84,8 @@ extends AbstractComponent{
 			String subscriberURI =
 				this.dccOutPort.createComponent(
 					Subscriber.class.getCanonicalName(),
-					new Object[] {CVM.managementBIPURI, Integer.toString(i)}) ;
+					new Object[] {CVM.managementBIPURI, Integer.toString(i), false}) ;
 			this.deployerURIs.add(subscriberURI) ;
-			System.out.println("creation subscriber"+i);
 
 		}
 		
@@ -118,7 +114,6 @@ extends AbstractComponent{
 	public void			finalise() throws Exception
 	{
 
-		System.out.println("Dans finalise");
 		this.doPortDisconnection(this.dccOutPort.getPortURI()) ;
 
 		super.finalise();
@@ -131,7 +126,6 @@ extends AbstractComponent{
 	public void			shutdown() throws ComponentShutdownException
 	{
 		try {
-			System.out.println("Dans shutdown");
 			this.dccOutPort.unpublishPort() ;
 		} catch (Exception e) {
 			throw new ComponentShutdownException(e) ;
@@ -139,43 +133,7 @@ extends AbstractComponent{
 		super.shutdown();
 	}
 	
-//	public void 	componentsCreation() throws Exception
-//	{
-//
-//		String brokerURI =
-//				this.dccOutPort.createComponent(
-//						Broker.class.getCanonicalName(),
-//						new Object[] {CVM.managementBIPURI}) ;
-//		this.deployerURIs.add(brokerURI) ;
-//		System.out.println("creation broker");
-//		
-//		for(int i= 0; i < 3; i++) {
-//			String publisherURI =
-//					this.dccOutPort.createComponent(
-//							Publisher.class.getCanonicalName(),
-//							new Object[] {CVM.managementBIPURI, Integer.toString(i)}) ;
-//			System.out.println("creation publiser"+i);
-//	
-//			this.deployerURIs.add(publisherURI) ;
-//		}
-//
-//		for(int i= 0; i < 3; i++) {
-//			String subscriberURI =
-//				this.dccOutPort.createComponent(
-//					Subscriber.class.getCanonicalName(),
-//					new Object[] {CVM.managementBIPURI, Integer.toString(i)}) ;
-//			this.deployerURIs.add(subscriberURI) ;
-//			System.out.println("creation subscriber"+i);
-//
-//		}
-//		
-//	}
-}
-// -----------------------------------------------------------------------------
-
-	
-	
-	
+}	
 	
 	
 

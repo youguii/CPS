@@ -2,6 +2,4 @@ eclipse.preferences.version=1
 encoding//src/components/Broker.java=UTF-8
 encoding//src/components/Publisher.java=UTF-8
 encoding//src/components/Subscriber.java=UTF-8
-encoding//src/versionMultiJvm/broker_repartition/components/Publisher.java=UTF-8
-encoding//src/versionMultiJvm/broker_repartition/components/Subscriber.java=UTF-8
 encoding//src/versionMultiJvm/versionStaticMJvm/components/Broker.java=UTF-8
